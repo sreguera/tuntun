@@ -88,13 +88,6 @@ export class Transputer {
         this.writeIptr(this.readIptr() + 1);        
     }
 
-    execOpr() {
-        switch (this.readOreg()) {
-
-        }
-        this.writeOreg(0);
-    }
-
     execLdc() {
         this.push(this.readOreg());
         this.writeOreg(0);
@@ -104,6 +97,24 @@ export class Transputer {
     execEqc() {
         this.push(this.pop() === this.readOreg() ? TRUE : FALSE);
         this.writeOreg(0);
+        this.writeIptr(this.nextInst());
+    }
+
+    execOpr() {
+        switch (this.readOreg()) {
+            case 0x0: {
+                this.execRev();
+                break;
+            }
+        }
+        this.writeOreg(0);
+    }
+
+    execRev() {
+        const a = this.pop();
+        const b = this.pop();
+        this.push(a);
+        this.push(b);
         this.writeIptr(this.nextInst());
     }
 

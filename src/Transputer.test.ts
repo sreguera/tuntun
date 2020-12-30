@@ -44,3 +44,16 @@ test('eqc produces false for not equals', () => {
     t.step();
     expect(t.top()).toBe(0);
 });
+
+test('rev reverses the stack', () => {
+    const t = new Transputer();
+    t.writeByteMem(0, 0x43);
+    t.writeByteMem(1, 0x44);
+    t.writeByteMem(2, 0xF0);
+    t.step();
+    t.step();
+    t.step();
+    const a = t.pop();
+    const b = t.pop();
+    expect([a, b]).toEqual([3, 4]);
+});
