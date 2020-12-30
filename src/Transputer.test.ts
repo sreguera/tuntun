@@ -1,29 +1,29 @@
-import { Transputer } from './Transputer'
+import { Transputer } from './Transputer';
+import { asm } from './Assembler';
+
+function execSeq(code: string, t: Transputer) {
+    const codes = asm(code);
+    codes.forEach((val, offset) => {
+        t.writeByteMem(offset, val);
+    });
+    codes.forEach(_ => t.step());
+}
 
 test('ldc loads a constant', () => {
     const t = new Transputer();
-    t.writeByteMem(0, 0x43);
-    t.step();
+    execSeq("ldc 3", t);
     expect(t.top()).toBe(0x3);
 });
 
 test('ldc loads a long constant', () => {
     const t = new Transputer();
-    t.writeByteMem(0, 0x23);
-    t.writeByteMem(1, 0x24);
-    t.writeByteMem(2, 0x45);
-    t.step();
-    t.step();
-    t.step();
+    execSeq("ldc 0x345", t);
     expect(t.top()).toBe(0x345);
 });
 
 test('ldc loads a negative constant', () => {
     const t = new Transputer();
-    t.writeByteMem(0, 0x60);
-    t.writeByteMem(1, 0x4E);
-    t.step();
-    t.step();
+    execSeq("ldc -2", t);
     expect(t.top()).toBe(-2);
 });
 
