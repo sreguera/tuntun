@@ -26,3 +26,21 @@ test('ldc loads a negative constant', () => {
     t.step();
     expect(t.top()).toBe(-2);
 });
+
+test('eqc produces true for equals', () => {
+    const t = new Transputer();
+    t.writeByteMem(0, 0x43);
+    t.writeByteMem(1, 0xC3);
+    t.step();
+    t.step();
+    expect(t.top()).toBe(1);
+});
+
+test('eqc produces false for not equals', () => {
+    const t = new Transputer();
+    t.writeByteMem(0, 0x43);
+    t.writeByteMem(1, 0xC5);
+    t.step();
+    t.step();
+    expect(t.top()).toBe(0);
+});

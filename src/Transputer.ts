@@ -5,6 +5,9 @@ enum Regs { Areg, Breg, Creg, Wptr, Iptr, Oreg, Eoreg };
 const MostNeg = 0x80000000;
 const MostPos = 0x7FFFFFFF;
 
+const TRUE = 1;
+const FALSE = 0;
+
 export class Transputer {
 
     registers: Int32Array = new Int32Array(Regs.Eoreg);
@@ -59,6 +62,7 @@ export class Transputer {
                 break;
             }
             case 0xC: {
+                this.execEqc();
                 break;
             }
             case 0xD: {
@@ -97,6 +101,12 @@ export class Transputer {
         this.writeIptr(this.nextInst());
     }
 
+    execEqc() {
+        this.push(this.pop() === this.readOreg() ? TRUE : FALSE);
+        this.writeOreg(0);
+        this.writeIptr(this.nextInst());
+    }
+
     nextInst(): number {
         return this.registers[Regs.Iptr] + 1;
     }
@@ -121,6 +131,13 @@ export class Transputer {
         this.registers[Regs.Creg] = this.registers[Regs.Breg];
         this.registers[Regs.Breg] = this.registers[Regs.Areg];
         this.registers[Regs.Areg] = value;
+    }
+
+    pop(): number {
+        const value = this.registers[Regs.Areg];
+        this.registers[Regs.Areg] = this.registers[Regs.Breg];
+        this.registers[Regs.Breg] = this.registers[Regs.Creg];
+        return value;
     }
 
     top(): number {
