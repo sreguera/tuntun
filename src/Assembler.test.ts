@@ -19,3 +19,9 @@ test('assembles more than 1 inst', () => {
     const bytes = asm('ldc 3; ldc 4');
     expect(bytes).toEqual([0x43, 0x44]);
 });
+
+test('assembles a simple operation', () => {
+    const bytes = asm('rev');
+    expect(bytes).toEqual([0xF0]);
+})
+

@@ -1,5 +1,3 @@
-export {}
-
 enum Regs { Areg, Breg, Creg, Wptr, Iptr, Oreg, Eoreg };
 
 const MostNeg = 0x80000000;

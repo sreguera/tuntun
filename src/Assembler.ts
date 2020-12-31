@@ -1,5 +1,3 @@
-export {};
-
 export function asm(code: string): number[] {
     const insts = code.split(';');
     return insts.flatMap(inst => asm1(inst));
@@ -11,6 +9,12 @@ function asm1(inst: string): number[] {
         case 'ldc': {
             return prefix(LDC, parseInt(fields[1]));
         }
+        case 'eqc': {
+            return prefix(EQC, parseInt(fields[1]));
+        }
+        case 'rev': {
+            return prefix(OPR, REV);
+        }
         default: {
             return [];
         }
@@ -20,6 +24,10 @@ function asm1(inst: string): number[] {
 const PFIX = 0x2;
 const NFIX = 0x6;
 const LDC = 0x4;
+const EQC = 0xC;
+const OPR = 0xF;
+
+const REV = 0x0;
 
 function prefix(op: number, e: number): number[] {
     if (e < 16 && e >= 0) {
