@@ -6,6 +6,9 @@ const MostPos = 0x7FFFFFFF;
 const TRUE = 1;
 const FALSE = 0;
 
+class BreakpointReached {        
+}
+
 export class Transputer {
 
     registers: Int32Array = new Int32Array(Regs.Eoreg);
@@ -16,11 +19,35 @@ export class Transputer {
         this.writeIptr(0);
     }
 
+    /**
+     * Executes instructions until a breakpoint instruction is reached.
+     */
+    run() {
+        try {
+            while (true) {
+                this.step();
+            }    
+        } catch (e: unknown) {
+            if (!(e instanceof BreakpointReached)) {
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * Executes one instruction.
+     */
     step() {
         const inst = this.readByteMem(this.readIptr());
         this.writeOreg(this.readOreg() | (inst & 0xF));
+
+        if (inst === 0x0) {
+            throw new BreakpointReached();
+        }
+
         switch ((inst & 0xF0) >>> 4) {
             case 0x0: {
+                this.execJ();
                 break;
             }
             case 0x1: {
@@ -54,6 +81,7 @@ export class Transputer {
                 break;
             }
             case 0xA: {
+                this.execCj();
                 break;
             }
             case 0xB: {
@@ -96,6 +124,21 @@ export class Transputer {
         this.push(this.pop() === this.readOreg() ? TRUE : FALSE);
         this.writeOreg(0);
         this.writeIptr(this.nextInst());
+    }
+
+    execJ() {
+        this.writeIptr(this.byteIndex(this.nextInst(), this.readOreg()));
+        this.writeOreg(0);
+    }
+
+    execCj() {
+        if (this.top() === 0) {
+            this.writeIptr(this.byteIndex(this.nextInst(), this.readOreg()));
+        } else {
+            this.pop();
+            this.writeIptr(this.nextInst());
+        }
+        this.writeOreg(0);    
     }
 
     execOpr() {
@@ -151,6 +194,10 @@ export class Transputer {
 
     top(): number {
         return this.registers[Regs.Areg];
+    }
+
+    byteIndex(base: number, offset: number): number {
+        return base + offset;
     }
 
     readByteMem(offset: number): number {

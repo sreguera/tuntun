@@ -12,6 +12,12 @@ function asm1(inst: string): number[] {
         case 'eqc': {
             return prefix(EQC, parseInt(fields[1]));
         }
+        case 'j': {
+            return prefix(J, parseInt(fields[1]));
+        }
+        case 'cj': {
+            return prefix(CJ, parseInt(fields[1]));
+        }
         case 'rev': {
             return prefix(OPR, REV);
         }
@@ -21,11 +27,13 @@ function asm1(inst: string): number[] {
     }
 }
 
+const J    = 0x0;
 const PFIX = 0x2;
+const LDC  = 0x4;
 const NFIX = 0x6;
-const LDC = 0x4;
-const EQC = 0xC;
-const OPR = 0xF;
+const CJ   = 0xA;
+const EQC  = 0xC;
+const OPR  = 0xF;
 
 const REV = 0x0;
 
