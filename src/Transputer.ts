@@ -193,6 +193,14 @@ export class Transputer {
                 this.execTeststd();
                 break;
             }
+            case 0x5A: {
+                this.execDup();
+                break;
+            }
+            case 0x79: {
+                this.execPop();
+                break;
+            }
         }
         this.writeOreg(0);
     }
@@ -202,6 +210,16 @@ export class Transputer {
         const b = this.pop();
         this.push(a);
         this.push(b);
+        this.writeIptr(this.nextInst());
+    }
+
+    execDup() {
+        this.push(this.top());
+        this.writeIptr(this.nextInst());
+    }
+
+    execPop() {
+        this.pop();
         this.writeIptr(this.nextInst());
     }
 
@@ -290,6 +308,7 @@ export class Transputer {
         const value = this.registers[Regs.Areg];
         this.registers[Regs.Areg] = this.registers[Regs.Breg];
         this.registers[Regs.Breg] = this.registers[Regs.Creg];
+        this.registers[Regs.Creg] = value;
         return value;
     }
 

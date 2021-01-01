@@ -21,6 +21,12 @@ function asm1(inst: string): number[] {
         case 'rev': {
             return prefix(OPR, REV);
         }
+        case 'dup': {
+            return prefix(OPR, DUP);
+        }
+        case 'pop': {
+            return prefix(OPR, POP);
+        }
         case 'testlds': {
             return prefix(OPR, TESTLDS);
         }
@@ -60,6 +66,8 @@ const TESTLDD = 0x25;
 const TESTSTS = 0x26;
 const TESTSTE = 0x27;
 const TESTSTD = 0x28;
+const DUP     = 0x5A;
+const POP     = 0x79;
 
 function prefix(op: number, e: number): number[] {
     if (e < 16 && e >= 0) {

@@ -98,3 +98,21 @@ test('store and load of the E register works', () => {
     execSeq('ldc 7; testste; ldc 0; testlde', t);
     expect(t.top()).toBe(7);
 });
+
+test('pop cycles the stack', () => {
+    const t = new Transputer();
+    execSeq('ldc 3; ldc 2; ldc 1; pop', t);
+    const a = t.pop();
+    const b = t.pop();
+    const c = t.pop();
+    expect([a, b, c]).toEqual([2, 3, 1]);
+});
+
+test('dup duplicates the top of the stack', () => {
+    const t = new Transputer();
+    execSeq('ldc 1; ldc 2; dup', t);
+    const a = t.pop();
+    const b = t.pop();
+    const c = t.pop();
+    expect([a, b, c]).toEqual([2, 2, 1]);
+});
