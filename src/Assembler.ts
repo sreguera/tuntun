@@ -27,6 +27,18 @@ function asm1(inst: string): number[] {
         case 'pop': {
             return prefix(OPR, POP);
         }
+        case 'and': {
+            return prefix(OPR, AND);
+        }
+        case 'or': {
+            return prefix(OPR, OR);
+        }
+        case 'xor': {
+            return prefix(OPR, XOR);
+        }
+        case 'not': {
+            return prefix(OPR, NOT);
+        }
         case 'testlds': {
             return prefix(OPR, TESTLDS);
         }
@@ -66,6 +78,10 @@ const TESTLDD = 0x25;
 const TESTSTS = 0x26;
 const TESTSTE = 0x27;
 const TESTSTD = 0x28;
+const NOT     = 0x32;
+const XOR     = 0x33;
+const AND     = 0x46;
+const OR      = 0x4B;
 const DUP     = 0x5A;
 const POP     = 0x79;
 

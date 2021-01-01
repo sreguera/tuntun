@@ -116,3 +116,27 @@ test('dup duplicates the top of the stack', () => {
     const c = t.pop();
     expect([a, b, c]).toEqual([2, 2, 1]);
 });
+
+test('and performs a bitwise and', () => {
+    const t = new Transputer();
+    execSeq('ldc 0x0FF; ldc 0xFF0; and', t);
+    expect(t.top()).toBe(0x0F0);
+});
+
+test('or performs a bitwise or', () => {
+    const t = new Transputer();
+    execSeq('ldc 0x0FF; ldc 0xFF0; or', t);
+    expect(t.top()).toBe(0xFFF);
+});
+
+test('xor performs a bitwise xor', () => {
+    const t = new Transputer();
+    execSeq('ldc 0x0FF; ldc 0xFF0; xor', t);
+    expect(t.top()).toBe(0xF0F);
+});
+
+test('not performs a bitwise not', () => {
+    const t = new Transputer();
+    execSeq('ldc 0xF; not', t);
+    expect(t.top() >>> 0).toBe(0xFFFFFFF0);
+});

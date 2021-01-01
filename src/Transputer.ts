@@ -193,6 +193,22 @@ export class Transputer {
                 this.execTeststd();
                 break;
             }
+            case 0x32: {
+                this.execNot();
+                break;
+            }
+            case 0x33: {
+                this.execXor();
+                break;
+            }
+            case 0x46: {
+                this.execAnd();
+                break;
+            }
+            case 0x4B: {
+                this.execOr();
+                break;
+            }
             case 0x5A: {
                 this.execDup();
                 break;
@@ -220,6 +236,33 @@ export class Transputer {
 
     execPop() {
         this.pop();
+        this.writeIptr(this.nextInst());
+    }
+
+    execAnd() {
+        const a = this.pop();
+        const b = this.pop();
+        this.push(a & b);
+        this.writeIptr(this.nextInst());
+    }
+
+    execOr() {
+        const a = this.pop();
+        const b = this.pop();
+        this.push(a | b);
+        this.writeIptr(this.nextInst());
+    }
+
+    execXor() {
+        const a = this.pop();
+        const b = this.pop();
+        this.push(a ^ b);
+        this.writeIptr(this.nextInst());
+    }
+
+    execNot() {
+        const a = this.pop();
+        this.push(~a);
         this.writeIptr(this.nextInst());
     }
 
