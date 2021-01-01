@@ -3,87 +3,54 @@ export function asm(code: string): number[] {
     return insts.flatMap(inst => asm1(inst));
 }
 
+interface InstructionDefinition {
+    type: 'direct' | 'operation';
+    code: number;
+};
+
+const PFIX = 0x2;
+const NFIX = 0x6;
+const OPR  = 0xF;
+
+const definitions: { [name: string]: InstructionDefinition } = {
+    'j'       : { type: 'direct',    code: 0x0  },
+    'pfix'    : { type: 'direct',    code: PFIX },
+    'ldc'     : { type: 'direct',    code: 0x4  },
+    'nfix'    : { type: 'direct',    code: NFIX },
+    'cj'      : { type: 'direct',    code: 0xA  },
+    'eqc'     : { type: 'direct',    code: 0xC  },
+    'rev'     : { type: 'operation', code: 0x00 },
+    'testlds' : { type: 'operation', code: 0x23 },
+    'testlde' : { type: 'operation', code: 0x24 },
+    'testldd' : { type: 'operation', code: 0x25 },
+    'teststs' : { type: 'operation', code: 0x26 },
+    'testste' : { type: 'operation', code: 0x27 },
+    'teststd' : { type: 'operation', code: 0x28 },
+    'not'     : { type: 'operation', code: 0x32 },
+    'xor'     : { type: 'operation', code: 0x33 },
+    'and'     : { type: 'operation', code: 0x46 },
+    'or'      : { type: 'operation', code: 0x4B },
+    'dup'     : { type: 'operation', code: 0x5A },
+    'pop'     : { type: 'operation', code: 0x79 },
+};
+
 function asm1(inst: string): number[] {
     const fields = inst.trim().split(' ');
-    switch (fields[0]) {
-        case 'ldc': {
-            return prefix(LDC, parseInt(fields[1]));
+    const def = definitions[fields[0]];
+    if (!def)
+    {
+        return [];
+    }
+
+    switch (def.type) {
+        case 'direct': {
+            return prefix(def.code, parseInt(fields[1]));
         }
-        case 'eqc': {
-            return prefix(EQC, parseInt(fields[1]));
-        }
-        case 'j': {
-            return prefix(J, parseInt(fields[1]));
-        }
-        case 'cj': {
-            return prefix(CJ, parseInt(fields[1]));
-        }
-        case 'rev': {
-            return prefix(OPR, REV);
-        }
-        case 'dup': {
-            return prefix(OPR, DUP);
-        }
-        case 'pop': {
-            return prefix(OPR, POP);
-        }
-        case 'and': {
-            return prefix(OPR, AND);
-        }
-        case 'or': {
-            return prefix(OPR, OR);
-        }
-        case 'xor': {
-            return prefix(OPR, XOR);
-        }
-        case 'not': {
-            return prefix(OPR, NOT);
-        }
-        case 'testlds': {
-            return prefix(OPR, TESTLDS);
-        }
-        case 'teststs': {
-            return prefix(OPR, TESTSTS);
-        }
-        case 'testldd': {
-            return prefix(OPR, TESTLDD);
-        }
-        case 'teststd': {
-            return prefix(OPR, TESTSTD);
-        }
-        case 'testlde': {
-            return prefix(OPR, TESTLDE);
-        }
-        case 'testste': {
-            return prefix(OPR, TESTSTE);
-        }
-        default: {
-            return [];
+        case 'operation': {
+            return prefix(OPR, def.code);
         }
     }
 }
-
-const J    = 0x0;
-const PFIX = 0x2;
-const LDC  = 0x4;
-const NFIX = 0x6;
-const CJ   = 0xA;
-const EQC  = 0xC;
-const OPR  = 0xF;
-
-const REV     = 0x00;
-const TESTLDS = 0x23;
-const TESTLDE = 0x24;
-const TESTLDD = 0x25;
-const TESTSTS = 0x26;
-const TESTSTE = 0x27;
-const TESTSTD = 0x28;
-const NOT     = 0x32;
-const XOR     = 0x33;
-const AND     = 0x46;
-const OR      = 0x4B;
-const DUP     = 0x5A;
-const POP     = 0x79;
 
 function prefix(op: number, e: number): number[] {
     if (e < 16 && e >= 0) {
