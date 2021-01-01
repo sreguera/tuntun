@@ -1,4 +1,20 @@
-enum Regs { Areg, Breg, Creg, Wptr, Iptr, Oreg, Eoreg };
+/** Offsets of registers in the register file. */
+enum Regs { 
+    /** Points to the workspace of the current process. */
+    Wptr,
+    /** Points to the next instruction to be executed. */
+    Iptr,
+    /** Top of the evaluation stack. */
+    Areg,
+    /** Middle of the evaluation stack. */
+    Breg,
+    /** Bottom of the evaluation stack. */
+    Creg,
+    /** Operand for the next instruction. */
+    Oreg,
+    /** Marker to get the number of registers. */
+    Eoreg
+};
 
 const MostNeg = 0x80000000;
 const MostPos = 0x7FFFFFFF;
