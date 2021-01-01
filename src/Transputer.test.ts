@@ -80,3 +80,21 @@ test(`cj doesn't jump if A is not 0`, () => {
     execCFlow('ldc 1; cj 2; ldc 3; j 0; ldc 5; j 0', t);
     expect(t.top()).toBe(3);
 });
+
+test('store and load of the status register works', () => {
+    const t = new Transputer();
+    execSeq('ldc 7; teststs; ldc 0; testlds', t);
+    expect(t.top()).toBe(7);
+});
+
+test('store and load of the D register works', () => {
+    const t = new Transputer();
+    execSeq('ldc 7; teststd; ldc 0; testldd', t);
+    expect(t.top()).toBe(7);
+});
+
+test('store and load of the E register works', () => {
+    const t = new Transputer();
+    execSeq('ldc 7; testste; ldc 0; testlde', t);
+    expect(t.top()).toBe(7);
+});

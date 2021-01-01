@@ -10,8 +10,14 @@ enum Regs {
     Breg,
     /** Bottom of the evaluation stack. */
     Creg,
+    /** Used internally by the microcode. */
+    Dreg,
+    /** Used internally by the microcode. */
+    Ereg,
     /** Operand for the next instruction. */
     Oreg,
+    /** Behaviour control and error information. */
+    StatusReg,
     /** Marker to get the number of registers. */
     Eoreg
 };
@@ -163,6 +169,30 @@ export class Transputer {
                 this.execRev();
                 break;
             }
+            case 0x23: {
+                this.execTestlds();
+                break;
+            }
+            case 0x24: {
+                this.execTestlde();
+                break;
+            }
+            case 0x25: {
+                this.execTestldd();
+                break;
+            }
+            case 0x26: {
+                this.execTeststs();
+                break;
+            }
+            case 0x27: {
+                this.execTestste();
+                break;
+            }
+            case 0x28: {
+                this.execTeststd();
+                break;
+            }
         }
         this.writeOreg(0);
     }
@@ -175,6 +205,37 @@ export class Transputer {
         this.writeIptr(this.nextInst());
     }
 
+    execTestlds() {
+        this.push(this.readStatusReg());
+        this.writeIptr(this.nextInst());
+    }
+
+    execTeststs() {
+        this.writeStatusReg(this.pop());
+        this.writeIptr(this.nextInst());
+    }
+
+    execTestldd() {
+        this.push(this.readDreg());
+        this.writeIptr(this.nextInst());
+    }
+
+    execTeststd() {
+        this.writeDreg(this.pop());
+        this.writeIptr(this.nextInst());
+    }
+
+    execTestlde() {
+        this.push(this.readEreg());
+        this.writeIptr(this.nextInst());
+    }
+
+    execTestste() {
+        this.writeEreg(this.pop());
+        this.writeIptr(this.nextInst());
+    }
+
+    /** Returns the address of the next instruction. */
     nextInst(): number {
         return this.registers[Regs.Iptr] + 1;
     }
@@ -193,6 +254,30 @@ export class Transputer {
 
     writeOreg(value: number) {
         this.registers[Regs.Oreg] = value;
+    }
+
+    readDreg(): number {
+        return this.registers[Regs.Dreg];
+    }
+
+    writeDreg(value: number) {
+        this.registers[Regs.Dreg] = value;
+    }
+
+    readEreg(): number {
+        return this.registers[Regs.Ereg];
+    }
+
+    writeEreg(value: number) {
+        this.registers[Regs.Ereg] = value;
+    }
+
+    readStatusReg(): number {
+        return this.registers[Regs.StatusReg];
+    }
+
+    writeStatusReg(value: number) {
+        this.registers[Regs.StatusReg] = value;
     }
 
     push(value: number) {

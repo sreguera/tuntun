@@ -21,6 +21,24 @@ function asm1(inst: string): number[] {
         case 'rev': {
             return prefix(OPR, REV);
         }
+        case 'testlds': {
+            return prefix(OPR, TESTLDS);
+        }
+        case 'teststs': {
+            return prefix(OPR, TESTSTS);
+        }
+        case 'testldd': {
+            return prefix(OPR, TESTLDD);
+        }
+        case 'teststd': {
+            return prefix(OPR, TESTSTD);
+        }
+        case 'testlde': {
+            return prefix(OPR, TESTLDE);
+        }
+        case 'testste': {
+            return prefix(OPR, TESTSTE);
+        }
         default: {
             return [];
         }
@@ -35,7 +53,13 @@ const CJ   = 0xA;
 const EQC  = 0xC;
 const OPR  = 0xF;
 
-const REV = 0x0;
+const REV     = 0x00;
+const TESTLDS = 0x23;
+const TESTLDE = 0x24;
+const TESTLDD = 0x25;
+const TESTSTS = 0x26;
+const TESTSTE = 0x27;
+const TESTSTD = 0x28;
 
 function prefix(op: number, e: number): number[] {
     if (e < 16 && e >= 0) {
