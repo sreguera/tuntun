@@ -158,3 +158,23 @@ test('testerr clear the error flag', () => {
     execSeq('seterr; testerr; testerr', t);
     expect(t.top()).toBe(1);
 });
+
+test('adc sums a constant to the top of the stack with no error', () => {
+    const t = new Transputer();
+    execSeq('ldc 4; adc 5; testerr', t);
+    const a = t.pop();
+    const b = t.pop();
+    expect([a, b]).toEqual([1, 9]);
+});
+
+test('adc generates error on overflow', () => {
+    const t = new Transputer();
+    execSeq('ldc 0x7FFFFFFF; adc 1; testerr', t);
+    expect(t.top()).toBe(0);
+});
+
+test('adc generates error on underflow', () => {
+    const t = new Transputer();
+    execSeq('ldc 0x80000000; adc -1; testerr', t);
+    expect(t.top()).toBe(0);
+});

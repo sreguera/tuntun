@@ -25,7 +25,7 @@ enum Regs {
 /** Status bit set when there is an error. */
 const ErrorFlag = 0x80000000;
 
-const MostNeg = 0x80000000;
+const MostNeg = -0x80000000;
 const MostPos = 0x7FFFFFFF;
 
 const TRUE = 1;
@@ -100,6 +100,7 @@ export class Transputer {
                 break;
             }
             case 0x8: {
+                this.execAdc();
                 break;
             }
             case 0x9: {
@@ -147,6 +148,16 @@ export class Transputer {
 
     execEqc() {
         this.push(this.pop() === this.readOreg() ? TRUE : FALSE);
+        this.writeOreg(0);
+        this.writeIptr(this.nextInst());
+    }
+
+    execAdc() {
+        const result = this.pop() + this.readOreg();
+        if (result > MostPos || result < MostNeg) {
+            this.setStatusFlag(ErrorFlag);
+        }
+        this.push(result);
         this.writeOreg(0);
         this.writeIptr(this.nextInst());
     }
