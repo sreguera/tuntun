@@ -140,3 +140,21 @@ test('not performs a bitwise not', () => {
     execSeq('ldc 0xF; not', t);
     expect(t.top() >>> 0).toBe(0xFFFFFFF0);
 });
+
+test('testerr with no error puts true on the stack', () => {
+    const t = new Transputer();
+    execSeq('testerr', t);
+    expect(t.top()).toBe(1);
+});
+
+test('testerr with error puts false on the stack', () => {
+    const t = new Transputer();
+    execSeq('seterr; testerr', t);
+    expect(t.top()).toBe(0);
+});
+
+test('testerr clear the error flag', () => {
+    const t = new Transputer();
+    execSeq('seterr; testerr; testerr', t);
+    expect(t.top()).toBe(1);
+});

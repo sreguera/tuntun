@@ -22,6 +22,9 @@ enum Regs {
     Eoreg
 };
 
+/** Status bit set when there is an error. */
+const ErrorFlag = 0x80000000;
+
 const MostNeg = 0x80000000;
 const MostPos = 0x7FFFFFFF;
 
@@ -169,6 +172,10 @@ export class Transputer {
                 this.execRev();
                 break;
             }
+            case 0x10: {
+                this.execSeterr();
+                break;
+            }
             case 0x23: {
                 this.execTestlds();
                 break;
@@ -191,6 +198,10 @@ export class Transputer {
             }
             case 0x28: {
                 this.execTeststd();
+                break;
+            }
+            case 0x29: {
+                this.execTesterr();
                 break;
             }
             case 0x32: {
@@ -263,6 +274,17 @@ export class Transputer {
     execNot() {
         const a = this.pop();
         this.push(~a);
+        this.writeIptr(this.nextInst());
+    }
+
+    execSeterr() {
+        this.setStatusFlag(ErrorFlag);
+        this.writeIptr(this.nextInst());
+    }
+
+    execTesterr() {
+        this.push(this.getStatusFlag(ErrorFlag) ? FALSE : TRUE);
+        this.clearStatusFlag(ErrorFlag);
         this.writeIptr(this.nextInst());
     }
 
@@ -339,6 +361,18 @@ export class Transputer {
 
     writeStatusReg(value: number) {
         this.registers[Regs.StatusReg] = value;
+    }
+
+    setStatusFlag(flag: number) {
+        this.writeStatusReg(this.readStatusReg() | flag);
+    }
+
+    clearStatusFlag(flag: number) {
+        this.writeStatusReg(this.readStatusReg() & ~flag);
+    }
+
+    getStatusFlag(flag: number): boolean {
+        return (this.readStatusReg() & ErrorFlag) !== 0;
     }
 
     push(value: number) {
