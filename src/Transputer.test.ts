@@ -65,7 +65,7 @@ test('rev reverses the stack', () => {
 
 test('j jumps', () => {
     const t = new Transputer();
-    execCFlow('j 1; ldc 3; ldc 5; j 0', t);
+    execCFlow('j 2; ldc 3; j 0; ldc 5; j 0', t);
     expect(t.top()).toBe(5);
 });
 
@@ -91,8 +91,34 @@ test('gcall jumps where A says', () => {
 
 test('gajw changes the workspace pointer', () => {
     const t = new Transputer();
-    execCFlow('ldc 0x100; gajw; ldlp 0', t);
+    execSeq('ldc 0x100; gajw; ldlp 0', t);
     expect(t.top()).toBe(0x100);
+});
+
+test('ajw adjusts the workspace pointer', () => {
+    const t = new Transputer();
+    execSeq('ldc 256; gajw; ajw -4; ldlp 0', t);
+    expect(t.top()).toBe(240);
+});
+
+test('call calls a procedure', () => {
+    const t = new Transputer();
+    execCFlow('ldc 0x100; gajw; ldc 9; call 2; ldc 3; j 0; ldl 1; j 0', t);
+    expect(t.top()).toBe(9);
+});
+
+test('ret returns from a procedure', () => {
+    const t = new Transputer();
+    execCFlow('ldc 256; gajw; call 2; ldlp 0; j 0; ldlp 0; ret', t);
+    const a = t.pop();
+    const b = t.pop();
+    expect([a, b]).toEqual([256, 240]);
+});
+
+test('ldl and stl load and set items in the workspace', () => {
+    const t = new Transputer();
+    execSeq('ldc 0x100; gajw; ldc 7; stl 0; ldc 2; ldl 0', t);
+    expect(t.top()).toBe(7);
 });
 
 test('store and load of the status register works', () => {

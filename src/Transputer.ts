@@ -43,7 +43,7 @@ export class Transputer {
 
     registers: Int32Array = new Int32Array(Regs.Eoreg);
 
-    memory: Uint8Array = new Uint8Array(4096);
+    memory: DataView = new DataView(new ArrayBuffer(4096));
 
     constructor() {
         this.writeIptr(0);
@@ -103,6 +103,7 @@ export class Transputer {
                 break;
             }
             case 0x7: {
+                this.execLdl();
                 break;
             }
             case 0x8: {
@@ -110,6 +111,7 @@ export class Transputer {
                 break;
             }
             case 0x9: {
+                this.execCall();
                 break;
             }
             case 0xA: {
@@ -117,6 +119,7 @@ export class Transputer {
                 break;
             }
             case 0xB: {
+                this.execAjw();
                 break;
             }
             case 0xC: {
@@ -124,6 +127,7 @@ export class Transputer {
                 break;
             }
             case 0xD: {
+                this.execStl();
                 break;
             }
             case 0xE: {
@@ -152,10 +156,42 @@ export class Transputer {
         this.writeIptr(this.nextInst());
     }
 
+    execLdl() {
+        this.push(this.readWorkspace(this.readOreg()));
+        this.writeOreg(0);
+        this.writeIptr(this.nextInst());
+    }
+
+    execStl() {
+        this.writeWorkspace(this.readOreg(), this.pop());
+        this.writeOreg(0);
+        this.writeIptr(this.nextInst());
+    }
+
     execLdlp() {
         this.push(this.index(this.readWptr(), this.readOreg()));
         this.writeOreg(0);
         this.writeIptr(this.nextInst());
+    }
+
+    execAjw() {
+        this.writeWptr(this.index(this.readWptr(), this.readOreg()));
+        this.writeOreg(0);
+        this.writeIptr(this.nextInst());
+    }
+
+    execCall() {
+        const a = this.pop();
+        const b = this.pop();
+        const c = this.pop();
+        this.writeWptr(this.index(this.readWptr(), -4));
+        this.writeWorkspace(0, this.nextInst());
+        this.writeWorkspace(1, a);
+        this.writeWorkspace(2, b);
+        this.writeWorkspace(3, c);
+        this.push(this.nextInst());
+        this.writeIptr(this.byteIndex(this.nextInst(), this.readOreg()));
+        this.writeOreg(0);
     }
 
     execEqc() {
@@ -217,6 +253,10 @@ export class Transputer {
             }
             case 0x1B: {
                 this.execLdpi();
+                break;
+            }
+            case 0x20: {
+                this.execRet();
                 break;
             }
             case 0x23: {
@@ -425,6 +465,11 @@ export class Transputer {
         this.writeIptr(this.nextInst());
     }
 
+    execRet() {
+        this.writeIptr(this.readWorkspace(0));
+        this.writeWptr(this.index(this.readWptr(), 4));
+    }
+
     execSeterr() {
         this.setStatusFlag(ErrorFlag);
         this.writeIptr(this.nextInst());
@@ -558,10 +603,27 @@ export class Transputer {
     }
 
     readByteMem(offset: number): number {
-        return this.memory[offset];
+        return this.memory.getUint8(offset);
     }
 
     writeByteMem(offset: number, value: number) {
-        return this.memory[offset] = value;
+        return this.memory.setUint8(offset, value);
     }
+
+    readMem(offset: number): number {
+        return this.memory.getInt32(offset, true);
+    }
+
+    writeMem(offset: number, value: number) {
+        return this.memory.setInt32(offset, value, true);
+    }
+
+    readWorkspace(offset: number): number {
+        return this.readMem(this.index(this.readWptr(), offset));
+    }
+
+    writeWorkspace(offset: number, value: number) {
+        return this.writeMem(this.index(this.readWptr(), offset), value);
+    }
+
 }
