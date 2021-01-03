@@ -202,6 +202,10 @@ export class Transputer {
                 this.execSeterr();
                 break;
             }
+            case 0x1B: {
+                this.execLdpi();
+                break;
+            }
             case 0x23: {
                 this.execTestlds();
                 break;
@@ -353,6 +357,11 @@ export class Transputer {
         const a = this.pop();
         this.push(a & ByteSelectMask);
         this.push(a >> ByteSelectLength);
+        this.writeIptr(this.nextInst());
+    }
+
+    execLdpi() {
+        this.push(this.byteIndex(this.nextInst(), this.pop()));
         this.writeIptr(this.nextInst());
     }
 
