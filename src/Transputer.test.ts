@@ -81,6 +81,20 @@ test(`cj doesn't jump if A is not 0`, () => {
     expect(t.top()).toBe(3);
 });
 
+test('gcall jumps where A says', () => {
+    const t = new Transputer();
+    execCFlow('ldc 4; gcall; ldc 3; j 0; ldc 5; j 0', t);
+    const a = t.pop();
+    const b = t.pop();
+    expect([a, b]).toEqual([5, 2]);
+});
+
+test('gajw changes the workspace pointer', () => {
+    const t = new Transputer();
+    execCFlow('ldc 0x100; gajw; ldlp 0', t);
+    expect(t.top()).toBe(0x100);
+});
+
 test('store and load of the status register works', () => {
     const t = new Transputer();
     execSeq('ldc 7; teststs; ldc 0; testlds', t);

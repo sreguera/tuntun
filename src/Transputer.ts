@@ -1,3 +1,5 @@
+import { isThisTypeNode } from "typescript";
+
 /** Offsets of registers in the register file. */
 enum Regs { 
     /** Points to the workspace of the current process. */
@@ -79,6 +81,7 @@ export class Transputer {
                 break;
             }
             case 0x1: {
+                this.execLdlp();
                 break;
             }
             case 0x2: {
@@ -149,6 +152,12 @@ export class Transputer {
         this.writeIptr(this.nextInst());
     }
 
+    execLdlp() {
+        this.push(this.index(this.readWptr(), this.readOreg()));
+        this.writeOreg(0);
+        this.writeIptr(this.nextInst());
+    }
+
     execEqc() {
         this.push(this.pop() === this.readOreg() ? TRUE : FALSE);
         this.writeOreg(0);
@@ -188,6 +197,10 @@ export class Transputer {
             }
             case 0x2: {
                 this.execBsub();
+                break;
+            }
+            case 0x6: {
+                this.execGcall();
                 break;
             }
             case 0x09: {
@@ -244,6 +257,10 @@ export class Transputer {
             }
             case 0x34: {
                 this.execBcnt();
+                break;
+            }
+            case 0x3C: {
+                this.execGajw();
                 break;
             }
             case 0x3F: {
@@ -395,6 +412,19 @@ export class Transputer {
         this.writeIptr(this.nextInst());
     }
 
+    execGcall() {
+        const a = this.pop();
+        this.push(this.nextInst());
+        this.writeIptr(a);
+    }
+
+    execGajw() {
+        const a = this.pop();
+        this.push(this.readWptr());
+        this.writeWptr(a & ~ByteSelectMask);
+        this.writeIptr(this.nextInst());
+    }
+
     execSeterr() {
         this.setStatusFlag(ErrorFlag);
         this.writeIptr(this.nextInst());
@@ -447,6 +477,14 @@ export class Transputer {
 
     writeIptr(value: number) {
         this.registers[Regs.Iptr] = value;
+    }
+
+    readWptr(): number {
+        return this.registers[Regs.Wptr];
+    }
+
+    writeWptr(value: number) {
+        this.registers[Regs.Wptr] = value;
     }
 
     readOreg(): number {
