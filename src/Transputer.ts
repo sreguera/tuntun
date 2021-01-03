@@ -27,6 +27,9 @@ const ErrorFlag = 0x80000000;
 
 const MostNeg = -0x80000000;
 const MostPos = 0x7FFFFFFF;
+const BytesPerWord = 4;
+const ByteSelectLength = 2;
+const ByteSelectMask = 0x3;
 
 const TRUE = 1;
 const FALSE = 0;
@@ -227,12 +230,24 @@ export class Transputer {
                 this.execXor();
                 break;
             }
+            case 0x34: {
+                this.execBcnt();
+                break;
+            }
+            case 0x3F: {
+                this.execWcnt();
+                break;
+            }
             case 0x40: {
                 this.execShr();
                 break;
             }
             case 0x41: {
                 this.execShl();
+                break;
+            }
+            case 0x42: {
+                this.execMint();
                 break;
             }
             case 0x46: {
@@ -318,6 +333,23 @@ export class Transputer {
         const a = this.pop();
         const b = this.pop();
         this.push(b > a ? TRUE : FALSE);
+        this.writeIptr(this.nextInst());
+    }
+
+    execBcnt() {
+        this.push(this.pop() * BytesPerWord);
+        this.writeIptr(this.nextInst());
+    }
+
+    execWcnt() {
+        const a = this.pop();
+        this.push(a & ByteSelectMask);
+        this.push(a >> ByteSelectLength);
+        this.writeIptr(this.nextInst());
+    }
+
+    execMint() {
+        this.push(MostNeg);
         this.writeIptr(this.nextInst());
     }
 

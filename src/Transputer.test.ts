@@ -202,3 +202,23 @@ test('shl shifts right', () => {
     execSeq('ldc 0xFF; ldc 4; shr', t);
     expect(t.top()).toBe(0xFF0);
 });
+
+test('mint produces the most negative int', () => {
+    const t = new Transputer();
+    execSeq('mint', t);
+    expect(t.top()).toBe(-(2**31));
+});
+
+test('bcnt counts the number of bytes in words', () => {
+    const t = new Transputer();
+    execSeq('ldc 3; bcnt', t);
+    expect(t.top()).toBe(12);
+});
+
+test('wcnt counts the number of words in bytes', () => {
+    const t = new Transputer();
+    execSeq('ldc 0xFF; wcnt', t);
+    const a = t.pop();
+    const b = t.pop();
+    expect([a, b]).toEqual([0x3F, 0x3]);
+});
