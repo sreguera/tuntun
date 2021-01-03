@@ -89,6 +89,7 @@ export class Transputer {
                 break;
             }
             case 0x3: {
+                this.execLdnl();
                 break;
             }
             case 0x4: {
@@ -96,6 +97,7 @@ export class Transputer {
                 break;
             }
             case 0x5: {
+                this.execLdnlp();
                 break;
             }
             case 0x6: {
@@ -131,6 +133,7 @@ export class Transputer {
                 break;
             }
             case 0xE: {
+                this.execStnl();
                 break;
             }
             case 0xF: {
@@ -172,6 +175,28 @@ export class Transputer {
         this.push(this.index(this.readWptr(), this.readOreg()));
         this.writeOreg(0);
         this.writeIptr(this.nextInst());
+    }
+
+    execLdnl() {
+        const a = this.pop() & ~ByteSelectMask;
+        this.push(this.readMem(this.index(a, this.readOreg())));
+        this.writeOreg(0);
+        this.writeIptr(this.nextInst());
+    }
+
+    execStnl() {
+        const a = this.pop() & ~ByteSelectMask;
+        const b = this.pop();
+        this.writeMem(this.index(a, this.readOreg()), b);
+        this.writeOreg(0);
+        this.writeIptr(this.nextInst());        
+    }
+
+    execLdnlp() {
+        const a = this.pop() & ~ByteSelectMask;
+        this.push(this.index(a, this.readOreg()));
+        this.writeOreg(0);
+        this.writeIptr(this.nextInst());        
     }
 
     execAjw() {

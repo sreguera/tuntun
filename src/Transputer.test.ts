@@ -121,6 +121,18 @@ test('ldl and stl load and set items in the workspace', () => {
     expect(t.top()).toBe(7);
 });
 
+test('ldnlp computes a global address', () => {
+    const t = new Transputer();
+    execSeq('ldc 100; ldnlp 4', t);
+    expect(t.top()).toBe(116);
+});
+
+test('ldnl and stnl load and set items globally', () => {
+    const t = new Transputer();
+    execSeq('ldc 7; ldc 0x100; stnl 5; ldc 0; ldc 0x100; ldnl 5', t);
+    expect(t.top()).toBe(7);
+});
+
 test('store and load of the status register works', () => {
     const t = new Transputer();
     execSeq('ldc 7; teststs; ldc 0; testlds', t);
