@@ -190,3 +190,15 @@ test('gt is false when b <= a', () => {
     execSeq('ldc 4; ldc 4; gt', t);
     expect(t.top()).toBe(0);
 });
+
+test('shl shifts left', () => {
+    const t = new Transputer();
+    execSeq('ldc 0x80000000; ldc 4; shl', t);
+    expect(t.top()).toBe(0x08000000);
+});
+
+test('shl shifts right', () => {
+    const t = new Transputer();
+    execSeq('ldc 0xFF; ldc 4; shr', t);
+    expect(t.top()).toBe(0xFF0);
+});
