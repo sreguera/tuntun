@@ -278,6 +278,10 @@ export class Transputer {
                 this.execPop();
                 break;
             }
+            case 0x81: {
+                this.execWsubdb();
+                break;
+            }
         }
         this.writeOreg(0);
     }
@@ -381,6 +385,13 @@ export class Transputer {
         const a = this.pop();
         const b = this.pop();
         this.push(this.index(a, b));
+        this.writeIptr(this.nextInst());
+    }
+
+    execWsubdb() {
+        const a = this.pop();
+        const b = this.pop();
+        this.push(this.index(a, b * 2));
         this.writeIptr(this.nextInst());
     }
 

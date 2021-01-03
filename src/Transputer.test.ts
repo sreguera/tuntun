@@ -235,6 +235,12 @@ test('wsub produces the word index', () => {
     expect(t.top()).toBe(17);
 });
 
+test('wsubdb produces the double word index', () => {
+    const t = new Transputer();
+    execSeq('ldc 3; ldc 5; wsubdb', t);
+    expect(t.top()).toBe(29);
+});
+
 test('ldpi produces the byte index from the next inst', () => {
     const t = new Transputer();
     execSeq('ldc 5; ldpi', t);
