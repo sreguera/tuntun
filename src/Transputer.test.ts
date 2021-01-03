@@ -222,3 +222,15 @@ test('wcnt counts the number of words in bytes', () => {
     const b = t.pop();
     expect([a, b]).toEqual([0x3F, 0x3]);
 });
+
+test('bsub produces the byte index', () => {
+    const t = new Transputer();
+    execSeq('ldc 3; ldc 5; bsub', t);
+    expect(t.top()).toBe(8);
+});
+
+test('wsub produces the word index', () => {
+    const t = new Transputer();
+    execSeq('ldc 3; ldc 5; wsub', t);
+    expect(t.top()).toBe(17);
+});

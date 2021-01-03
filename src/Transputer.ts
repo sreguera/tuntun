@@ -186,8 +186,16 @@ export class Transputer {
                 this.execRev();
                 break;
             }
+            case 0x2: {
+                this.execBsub();
+                break;
+            }
             case 0x09: {
                 this.execGt();
+                break;
+            }
+            case 0xA: {
+                this.execWsub();
                 break;
             }
             case 0x10: {
@@ -353,6 +361,20 @@ export class Transputer {
         this.writeIptr(this.nextInst());
     }
 
+    execBsub() {
+        const a = this.pop();
+        const b = this.pop();
+        this.push(this.byteIndex(a, b));
+        this.writeIptr(this.nextInst());
+    }
+
+    execWsub() {
+        const a = this.pop();
+        const b = this.pop();
+        this.push(this.index(a, b));
+        this.writeIptr(this.nextInst());
+    }
+
     execSeterr() {
         this.setStatusFlag(ErrorFlag);
         this.writeIptr(this.nextInst());
@@ -467,6 +489,10 @@ export class Transputer {
 
     top(): number {
         return this.registers[Regs.Areg];
+    }
+
+    index(base: number, offset: number): number {
+        return base + (BytesPerWord * offset);
     }
 
     byteIndex(base: number, offset: number): number {
