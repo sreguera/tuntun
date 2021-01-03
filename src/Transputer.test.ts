@@ -178,3 +178,15 @@ test('adc generates error on underflow', () => {
     execSeq('ldc 0x80000000; adc -1; testerr', t);
     expect(t.top()).toBe(0);
 });
+
+test('gt is true when b > a', () => {
+    const t = new Transputer();
+    execSeq('ldc 4; ldc 2; gt', t);
+    expect(t.top()).toBe(1);
+});
+
+test('gt is false when b <= a', () => {
+    const t = new Transputer();
+    execSeq('ldc 4; ldc 4; gt', t);
+    expect(t.top()).toBe(0);
+});

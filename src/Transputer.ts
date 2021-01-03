@@ -183,6 +183,10 @@ export class Transputer {
                 this.execRev();
                 break;
             }
+            case 0x09: {
+                this.execGt();
+                break;
+            }
             case 0x10: {
                 this.execSeterr();
                 break;
@@ -285,6 +289,13 @@ export class Transputer {
     execNot() {
         const a = this.pop();
         this.push(~a);
+        this.writeIptr(this.nextInst());
+    }
+
+    execGt() {
+        const a = this.pop();
+        const b = this.pop();
+        this.push(b > a ? TRUE : FALSE);
         this.writeIptr(this.nextInst());
     }
 
