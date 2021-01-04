@@ -191,7 +191,16 @@ export class Transputer {
     }
 
     execOpr() {
-        this.operations[this.readOreg()].call(this);
+        const opcode = this.readOreg();
+        if (opcode < this.operations.length) {
+            this.operations[this.readOreg()].call(this);
+        } else if (opcode === 0x17F) {
+            this.execLddevid();
+        } else if (opcode === 0x1FF) {
+            this.execStart();
+        } else {
+            throw 'unimplemented';
+        }       
         this.writeOreg(0);
     }
 
@@ -199,52 +208,52 @@ export class Transputer {
     }
 
     readonly operations = [
-        this.execRev,           this.execIllegal,       this.execBsub,          this.execIllegal,       // 0x00 - 0x03
-        this.execIllegal,       this.execIllegal,       this.execGcall,         this.execIllegal,       // 0x04 - 0x07
-        this.execIllegal,       this.execGt,            this.execWsub,          this.execIllegal,       // 0x08 - 0x0B
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x0C - 0x0F
-        this.execSeterr,        this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x10 - 0x13
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x14 - 0x17
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execLdpi,          // 0x18 - 0x1B
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x1C - 0x1F
-        this.execRet,           this.execIllegal,       this.execIllegal,       this.execTestlds,       // 0x20 - 0x23
+        this.execRev,           this.execLb,            this.execBsub,          this.execEndp,          // 0x00 - 0x03
+        this.execDiff,          this.execAdd,           this.execGcall,         this.execIn,            // 0x04 - 0x07
+        this.execProd,          this.execGt,            this.execWsub,          this.execOut,           // 0x08 - 0x0B
+        this.execSub,           this.execStartp,        this.execOutbyte,       this.execOutword,       // 0x0C - 0x0F
+        this.execSeterr,        this.execIllegal,       this.execResetch,       this.execCsub0,         // 0x10 - 0x13
+        this.execIllegal,       this.execStopp,         this.execLadd,          this.execStlb,          // 0x14 - 0x17
+        this.execSthf,          this.execNorm,          this.execLdiv,          this.execLdpi,          // 0x18 - 0x1B
+        this.execStlf,          this.execXdble,         this.execLdpri,         this.execRem,           // 0x1C - 0x1F
+        this.execRet,           this.execLend,          this.execLdtimer,       this.execTestlds,       // 0x20 - 0x23
         this.execTestlde,       this.execTestldd,       this.execTeststs,       this.execTestste,       // 0x24 - 0x27
-        this.execTeststd,       this.execTesterr,       this.execIllegal,       this.execIllegal,       // 0x28 - 0x2B
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x2C - 0x2F
-        this.execIllegal,       this.execIllegal,       this.execNot,           this.execXor,           // 0x30 - 0x33
-        this.execBcnt,          this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x34 - 0x37
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x38 - 0x3B
-        this.execGajw,          this.execIllegal,       this.execIllegal,       this.execWcnt,          // 0x3C - 0x3F
-        this.execShr,           this.execShl,           this.execMint,          this.execIllegal,       // 0x40 - 0x43
-        this.execIllegal,       this.execIllegal,       this.execAnd,           this.execIllegal,       // 0x44 - 0x47
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execOr,            // 0x48 - 0x4B
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x4C - 0x4F
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x50 - 0x53
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x54 - 0x57
-        this.execIllegal,       this.execIllegal,       this.execDup,           this.execIllegal,       // 0x58 - 0x5B
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x5C - 0x5F
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x60 - 0x63
+        this.execTeststd,       this.execTesterr,       this.execTestpranal,    this.execTin,           // 0x28 - 0x2B
+        this.execDiv,           this.execTesthardchan,  this.execDist,          this.execDisc,          // 0x2C - 0x2F
+        this.execDiss,          this.execLmul,          this.execNot,           this.execXor,           // 0x30 - 0x33
+        this.execBcnt,          this.execLshr,          this.execLshl,          this.execLsum,          // 0x34 - 0x37
+        this.execLsub,          this.execRunp,          this.execXword,         this.execSb,            // 0x38 - 0x3B
+        this.execGajw,          this.execSavel,         this.execSaveh,         this.execWcnt,          // 0x3C - 0x3F
+        this.execShr,           this.execShl,           this.execMint,          this.execAlt,           // 0x40 - 0x43
+        this.execAltwt,         this.execAltend,        this.execAnd,           this.execEnbt,          // 0x44 - 0x47
+        this.execEnbc,          this.execEnbs,          this.execMove,          this.execOr,            // 0x48 - 0x4B
+        this.execCsngl,         this.execCcnt1,         this.execTalt,          this.execLdiff,         // 0x4C - 0x4F
+        this.execSthb,          this.execTaltwt,        this.execSum,           this.execMul,           // 0x50 - 0x53
+        this.execSttimer,       this.execStoperr,       this.execCword,         this.execClrhalterr,    // 0x54 - 0x57
+        this.execSethalterr,    this.execTesthalterr,   this.execDup,           this.execMove2dinit,    // 0x58 - 0x5B
+        this.execMove2dall,     this.execMove2dnonzero, this.execMove2dzero,    this.execIllegal,       // 0x5C - 0x5F
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execUnpacksn,      // 0x60 - 0x63
         this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x64 - 0x67
         this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x68 - 0x6B
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x6C - 0x6F
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x70 - 0x73
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x74 - 0x77
-        this.execIllegal,       this.execPop,           this.execIllegal,       this.execIllegal,       // 0x78 - 0x7B
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x7C - 0x7F
-        this.execIllegal,       this.execWsubdb,        this.execIllegal,       this.execIllegal,       // 0x80 - 0x83
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x84 - 0x87
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x88 - 0x8B
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x8C - 0x8F
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x90 - 0x93
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x94 - 0x97
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x98 - 0x9B
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x9C - 0x9F
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xA0 - 0xA3
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xA4 - 0xA7
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xA8 - 0xAB
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xAC - 0xAF
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xB0 - 0xB3
-        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xB4 - 0xB7
+        this.execPostnormsn,    this.execRoundsn,       this.execIllegal,       this.execIllegal,       // 0x6C - 0x6F
+        this.execIllegal,       this.execLdinf,         this.execFmul,          this.execCflerr,        // 0x70 - 0x73
+        this.execCrcword,       this.execCrcbyte,       this.execBitcnt,        this.execBitrevword,    // 0x74 - 0x77
+        this.execBitrevnbits,   this.execPop,           this.execTimerdisableh, this.execTimerdisablel, // 0x78 - 0x7B
+        this.execTimerenableh,  this.execTimerenablel,  this.execLdmemstartval, this.execIllegal,       // 0x7C - 0x7F
+        this.execIllegal,       this.execWsubdb,        this.execFpldnldbi,     this.execFpchkerr,      // 0x80 - 0x83
+        this.execFpstnldb,      this.execIllegal,       this.execFpldnlsni,     this.execFpadd,         // 0x84 - 0x87
+        this.execFpstnlsn,      this.execFpsub,         this.execFpldnldb,      this.execFpmul,         // 0x88 - 0x8B
+        this.execFpdiv,         this.execIllegal,       this.execFpldnlsn,      this.execFpremfirst,    // 0x8C - 0x8F
+        this.execFpremstep,     this.execFpnan,         this.execFpordered,     this.execFpnonfinite,   // 0x90 - 0x93
+        this.execFpgt,          this.execFpeq,          this.execFpi32tor32,    this.execIllegal,       // 0x94 - 0x97
+        this.execFpi32tor64,    this.execIllegal,       this.execFpb32tor64,    this.execIllegal,       // 0x98 - 0x9B
+        this.execFptesterr,     this.execFprtoi32,      this.execFpstnli32,     this.execFpldzerosn,    // 0x9C - 0x9F
+        this.execFpldzerodb,    this.execFpint,         this.execIllegal,       this.execFpdup,         // 0xA0 - 0xA3
+        this.execFprev,         this.execIllegal,       this.execFpldnladddb,   this.execIllegal,       // 0xA4 - 0xA7
+        this.execFpldnlmuldb,   this.execIllegal,       this.execFpldnladdsn,   this.execFpentry,       // 0xA8 - 0xAB
+        this.execFpldnlmulsn,   this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xAC - 0xAF
+        this.execIllegal,       this.execBreak,         this.execClrj0break,    this.execSetj0break,    // 0xB0 - 0xB3
+        this.execTestj0break,   this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xB4 - 0xB7
         this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xB8 - 0xBB
         this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xBC - 0xBF
     ];
@@ -265,6 +274,38 @@ export class Transputer {
     execPop() {
         this.pop();
         this.writeIptr(this.nextInst());
+    }
+
+    execAdd() {
+        throw 'unimplemented';
+    }
+
+    execSub() {
+        throw 'unimplemented';
+    }
+
+    execMul() {
+        throw 'unimplemented';
+    }
+
+    execDiv() {
+        throw 'unimplemented';
+    }
+
+    execRem() {
+        throw 'unimplemented';
+    }
+
+    execSum() {
+        throw 'unimplemented';
+    }
+
+    execDiff() {
+        throw 'unimplemented';
+    }
+
+    execProd() {
+        throw 'unimplemented';
     }
 
     execAnd() {
@@ -315,6 +356,10 @@ export class Transputer {
         this.writeIptr(this.nextInst());
     }
 
+    execLend() {
+        throw 'unimplemented';
+    }
+
     execBcnt() {
         this.push(this.pop() * BytesPerWord);
         this.writeIptr(this.nextInst());
@@ -358,6 +403,34 @@ export class Transputer {
         this.writeIptr(this.nextInst());
     }
 
+    execMove() {
+        throw 'unimplemented';
+    }
+
+    execIn() {
+        throw 'unimplemented';
+    }
+
+    execOut() {
+        throw 'unimplemented';
+    }
+
+    execLb() {
+        throw 'unimplemented';
+    }
+
+    execSb() {
+        throw 'unimplemented';
+    }
+
+    execOutbyte() {
+        throw 'unimplemented';
+    }
+
+    execOutword() {
+        throw 'unimplemented';
+    }
+
     execGcall() {
         const a = this.pop();
         this.push(this.nextInst());
@@ -376,15 +449,199 @@ export class Transputer {
         this.writeWptr(this.index(this.readWptr(), 4));
     }
 
-    execSeterr() {
-        this.setStatusFlag(ErrorFlag);
-        this.writeIptr(this.nextInst());
+    execStartp() {
+        throw 'unimplemented';
+    }
+
+    execEndp() {
+        throw 'unimplemented';
+    }
+
+    execRunp() {
+        throw 'unimplemented';
+    }
+
+    execStopp() {
+        throw 'unimplemented';
+    }
+
+    execLdpri() {
+        throw 'unimplemented';
+    }
+
+    execLdtimer() {
+        throw 'unimplemented';
+    }
+
+    execTin() {
+        throw 'unimplemented';
+    }
+
+    execAlt() {
+        throw 'unimplemented';
+    }
+
+    execAltwt() {
+        throw 'unimplemented';
+    }
+
+    execAltend() {
+        throw 'unimplemented';
+    }
+
+    execTalt() {
+        throw 'unimplemented';
+    }
+
+    execTaltwt() {
+        throw 'unimplemented';
+    }
+
+    execEnbs() {
+        throw 'unimplemented';
+    }
+
+    execDiss() {
+        throw 'unimplemented';
+    }
+
+    execEnbc() {
+        throw 'unimplemented';
+    }
+
+    execDisc() {
+        throw 'unimplemented';
+    }
+
+    execEnbt() {
+        throw 'unimplemented';
+    }
+
+    execDist() {
+        throw 'unimplemented';
+    }
+
+    execCsub0() {
+        throw 'unimplemented';
+    }
+
+    execCcnt1() {
+        throw 'unimplemented';
     }
 
     execTesterr() {
         this.push(this.getStatusFlag(ErrorFlag) ? FALSE : TRUE);
         this.clearStatusFlag(ErrorFlag);
         this.writeIptr(this.nextInst());
+    }
+
+    execStoperr() {
+        throw 'unimplemented';
+    }
+
+    execSeterr() {
+        this.setStatusFlag(ErrorFlag);
+        this.writeIptr(this.nextInst());
+    }
+
+    execXword() {
+        throw 'unimplemented';
+    }
+
+    execCword() {
+        throw 'unimplemented';
+    }
+
+    execXdble() {
+        throw 'unimplemented';
+    }
+
+    execCsngl() {
+        throw 'unimplemented';
+    }
+
+    execLadd() {
+        throw 'unimplemented';
+    }
+
+    execLsub() {
+        throw 'unimplemented';
+    }
+
+    execLsum() {
+        throw 'unimplemented';
+    }
+
+    execLdiff() {
+        throw 'unimplemented';
+    }
+
+    execLmul() {
+        throw 'unimplemented';
+    }
+
+    execLdiv() {
+        throw 'unimplemented';
+    }
+
+    execLshl() {
+        throw 'unimplemented';
+    }
+
+    execLshr() {
+        throw 'unimplemented';
+    }
+
+    execNorm() {
+        throw 'unimplemented';
+    }
+
+    execResetch() {
+        throw 'unimplemented';
+    }
+
+    execTestpranal() {
+        throw 'unimplemented';
+    }
+
+    execSthf() {
+        throw 'unimplemented';
+    }
+
+    execStlf() {
+        throw 'unimplemented';
+    }
+
+    execSttimer() {
+        throw 'unimplemented';
+    }
+  
+    execSthb() {
+        throw 'unimplemented';
+    }
+
+    execStlb() {
+        throw 'unimplemented';
+    }
+
+    execSaveh() {
+        throw 'unimplemented';
+    }
+
+    execSavel() {
+        throw 'unimplemented';
+    }
+
+    execClrhalterr() {
+        throw 'unimplemented';
+    }
+
+    execSethalterr() {
+        throw 'unimplemented';
+    }
+
+    execTesthalterr() {
+        throw 'unimplemented';
     }
 
     execTestlds() {
@@ -415,6 +672,249 @@ export class Transputer {
     execTestste() {
         this.writeEreg(this.pop());
         this.writeIptr(this.nextInst());
+    }
+
+    execBreak() {
+        throw 'unimplemented';
+    }
+
+    execClrj0break() {
+        throw 'unimplemented';
+    }
+
+    execSetj0break() {
+        throw 'unimplemented';
+    }
+
+    execTestj0break() {
+        throw 'unimplemented';
+    }
+
+    execTesthardchan() {
+        throw 'unimplemented';
+    }
+
+    execTimerdisableh() {
+        throw 'unimplemented';
+    }
+
+    execTimerdisablel() {
+        throw 'unimplemented';
+    }
+
+    execTimerenableh() {
+        throw 'unimplemented';
+    }
+
+    execTimerenablel() {
+        throw 'unimplemented';
+    }
+
+    execLdmemstartval() {
+        throw 'unimplemented';
+    }
+
+    execFmul() {
+        throw 'unimplemented';
+    }
+
+    execUnpacksn() {
+        throw 'unimplemented';
+    }
+
+    execRoundsn() {
+        throw 'unimplemented';
+    }
+
+    execPostnormsn() {
+        throw 'unimplemented';
+    }
+
+    execLdinf() {
+        throw 'unimplemented';
+    }
+
+    execCflerr() {
+        throw 'unimplemented';
+    }
+
+    execMove2dinit() {
+        throw 'unimplemented';
+    }
+
+    execMove2dall() {
+        throw 'unimplemented';
+    }
+
+    execMove2dnonzero() {
+        throw 'unimplemented';
+    }
+
+    execMove2dzero() {
+        throw 'unimplemented';
+    }
+
+    execCrcword() {
+        throw 'unimplemented';
+    }
+
+    execCrcbyte() {
+        throw 'unimplemented';
+    }
+
+    execBitcnt() {
+        throw 'unimplemented';
+    }
+    execBitrevword() {
+        throw 'unimplemented';
+    }
+
+    execBitrevnbits() {
+        throw 'unimplemented';
+    }
+
+    execFpldnldbi() {
+        throw 'unimplemented';
+    }
+
+    execFpchkerr() {
+        throw 'unimplemented';
+    }
+
+    execFpstnldb() {
+        throw 'unimplemented';
+    }
+
+    execFpldnlsni() {
+        throw 'unimplemented';
+    }     
+
+    execFpadd() {
+        throw 'unimplemented';
+    }
+
+    execFpstnlsn() {
+        throw 'unimplemented';
+    }      
+
+    execFpsub() {
+        throw 'unimplemented';
+    }         
+
+    execFpldnldb() {
+        throw 'unimplemented';
+    }     
+
+    execFpmul() {
+        throw 'unimplemented';
+    }
+
+    execFpdiv() {
+        throw 'unimplemented';
+    }         
+
+    execFpldnlsn() {
+        throw 'unimplemented';
+    }      
+
+    execFpremfirst() {
+        throw 'unimplemented';
+    }
+
+    execFpremstep() {
+        throw 'unimplemented';
+    }     
+
+    execFpnan() {
+        throw 'unimplemented';
+    }         
+
+    execFpordered() {
+        throw 'unimplemented';
+    }     
+
+    execFpnonfinite() {
+        throw 'unimplemented';
+    }
+
+    execFpgt() {
+        throw 'unimplemented';
+    }          
+
+    execFpeq() {
+        throw 'unimplemented';
+    }          
+
+    execFpi32tor32() {
+        throw 'unimplemented';
+    }
+
+    execFpi32tor64() {
+        throw 'unimplemented';
+    }    
+
+    execFpb32tor64() {
+        throw 'unimplemented';
+    }    
+
+    execFptesterr() {
+        throw 'unimplemented';
+    }     
+
+    execFprtoi32() {
+        throw 'unimplemented';
+    }      
+
+    execFpstnli32() {
+        throw 'unimplemented';
+    }     
+
+    execFpldzerosn() {
+        throw 'unimplemented';
+    }
+
+    execFpldzerodb() {
+        throw 'unimplemented';
+    }    
+
+    execFpint() {
+        throw 'unimplemented';
+    }         
+
+    execFpdup() {
+        throw 'unimplemented';
+    }
+
+    execFprev() {
+        throw 'unimplemented';
+    }         
+
+    execFpldnladddb() {
+        throw 'unimplemented';
+    }   
+
+    execFpldnlmuldb() {
+        throw 'unimplemented';
+    }   
+
+    execFpldnladdsn() {
+        throw 'unimplemented';
+    }   
+
+    execFpentry() {
+        throw 'unimplemented';
+    }
+
+    execFpldnlmulsn() {
+        throw 'unimplemented';
+    }
+
+    execLddevid() {
+        throw 'unimplemented';
+    }
+
+    execStart() {
+        throw 'unimplemented';
     }
 
     /** Returns the address of the next instruction. */
