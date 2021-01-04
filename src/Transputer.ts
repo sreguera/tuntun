@@ -1,5 +1,3 @@
-import { isThisTypeNode } from "typescript";
-
 /** Offsets of registers in the register file. */
 enum Regs { 
     /** Points to the workspace of the current process. */
@@ -75,73 +73,15 @@ export class Transputer {
             throw new BreakpointReached();
         }
 
-        switch ((inst & 0xF0) >>> 4) {
-            case 0x0: {
-                this.execJ();
-                break;
-            }
-            case 0x1: {
-                this.execLdlp();
-                break;
-            }
-            case 0x2: {
-                this.execPfix();
-                break;
-            }
-            case 0x3: {
-                this.execLdnl();
-                break;
-            }
-            case 0x4: {
-                this.execLdc();
-                break;
-            }
-            case 0x5: {
-                this.execLdnlp();
-                break;
-            }
-            case 0x6: {
-                this.execNfix();
-                break;
-            }
-            case 0x7: {
-                this.execLdl();
-                break;
-            }
-            case 0x8: {
-                this.execAdc();
-                break;
-            }
-            case 0x9: {
-                this.execCall();
-                break;
-            }
-            case 0xA: {
-                this.execCj();
-                break;
-            }
-            case 0xB: {
-                this.execAjw();
-                break;
-            }
-            case 0xC: {
-                this.execEqc();
-                break;
-            }
-            case 0xD: {
-                this.execStl();
-                break;
-            }
-            case 0xE: {
-                this.execStnl();
-                break;
-            }
-            case 0xF: {
-                this.execOpr();
-                break;
-            }
-        }
+        this.direct[(inst & 0xF0) >>> 4].call(this);
     }
+
+    readonly direct = [
+        this.execJ,   this.execLdlp,  this.execPfix, this.execLdnl, // 0x0 - 0x3
+        this.execLdc, this.execLdnlp, this.execNfix, this.execLdl,  // 0x4 - 0x7
+        this.execAdc, this.execCall,  this.execCj,   this.execAjw,  // 0x8 - 0xB
+        this.execEqc, this.execStl,   this.execStnl, this.execOpr,  // 0xC - 0xF
+    ];
 
     execPfix() {
         this.writeOreg(this.readOreg() << 4);
@@ -251,122 +191,63 @@ export class Transputer {
     }
 
     execOpr() {
-        switch (this.readOreg()) {
-            case 0x0: {
-                this.execRev();
-                break;
-            }
-            case 0x2: {
-                this.execBsub();
-                break;
-            }
-            case 0x6: {
-                this.execGcall();
-                break;
-            }
-            case 0x09: {
-                this.execGt();
-                break;
-            }
-            case 0xA: {
-                this.execWsub();
-                break;
-            }
-            case 0x10: {
-                this.execSeterr();
-                break;
-            }
-            case 0x1B: {
-                this.execLdpi();
-                break;
-            }
-            case 0x20: {
-                this.execRet();
-                break;
-            }
-            case 0x23: {
-                this.execTestlds();
-                break;
-            }
-            case 0x24: {
-                this.execTestlde();
-                break;
-            }
-            case 0x25: {
-                this.execTestldd();
-                break;
-            }
-            case 0x26: {
-                this.execTeststs();
-                break;
-            }
-            case 0x27: {
-                this.execTestste();
-                break;
-            }
-            case 0x28: {
-                this.execTeststd();
-                break;
-            }
-            case 0x29: {
-                this.execTesterr();
-                break;
-            }
-            case 0x32: {
-                this.execNot();
-                break;
-            }
-            case 0x33: {
-                this.execXor();
-                break;
-            }
-            case 0x34: {
-                this.execBcnt();
-                break;
-            }
-            case 0x3C: {
-                this.execGajw();
-                break;
-            }
-            case 0x3F: {
-                this.execWcnt();
-                break;
-            }
-            case 0x40: {
-                this.execShr();
-                break;
-            }
-            case 0x41: {
-                this.execShl();
-                break;
-            }
-            case 0x42: {
-                this.execMint();
-                break;
-            }
-            case 0x46: {
-                this.execAnd();
-                break;
-            }
-            case 0x4B: {
-                this.execOr();
-                break;
-            }
-            case 0x5A: {
-                this.execDup();
-                break;
-            }
-            case 0x79: {
-                this.execPop();
-                break;
-            }
-            case 0x81: {
-                this.execWsubdb();
-                break;
-            }
-        }
+        this.operations[this.readOreg()].call(this);
         this.writeOreg(0);
     }
+
+    execIllegal() {
+    }
+
+    readonly operations = [
+        this.execRev,           this.execIllegal,       this.execBsub,          this.execIllegal,       // 0x00 - 0x03
+        this.execIllegal,       this.execIllegal,       this.execGcall,         this.execIllegal,       // 0x04 - 0x07
+        this.execIllegal,       this.execGt,            this.execWsub,          this.execIllegal,       // 0x08 - 0x0B
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x0C - 0x0F
+        this.execSeterr,        this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x10 - 0x13
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x14 - 0x17
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execLdpi,          // 0x18 - 0x1B
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x1C - 0x1F
+        this.execRet,           this.execIllegal,       this.execIllegal,       this.execTestlds,       // 0x20 - 0x23
+        this.execTestlde,       this.execTestldd,       this.execTeststs,       this.execTestste,       // 0x24 - 0x27
+        this.execTeststd,       this.execTesterr,       this.execIllegal,       this.execIllegal,       // 0x28 - 0x2B
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x2C - 0x2F
+        this.execIllegal,       this.execIllegal,       this.execNot,           this.execXor,           // 0x30 - 0x33
+        this.execBcnt,          this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x34 - 0x37
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x38 - 0x3B
+        this.execGajw,          this.execIllegal,       this.execIllegal,       this.execWcnt,          // 0x3C - 0x3F
+        this.execShr,           this.execShl,           this.execMint,          this.execIllegal,       // 0x40 - 0x43
+        this.execIllegal,       this.execIllegal,       this.execAnd,           this.execIllegal,       // 0x44 - 0x47
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execOr,            // 0x48 - 0x4B
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x4C - 0x4F
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x50 - 0x53
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x54 - 0x57
+        this.execIllegal,       this.execIllegal,       this.execDup,           this.execIllegal,       // 0x58 - 0x5B
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x5C - 0x5F
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x60 - 0x63
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x64 - 0x67
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x68 - 0x6B
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x6C - 0x6F
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x70 - 0x73
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x74 - 0x77
+        this.execIllegal,       this.execPop,           this.execIllegal,       this.execIllegal,       // 0x78 - 0x7B
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x7C - 0x7F
+        this.execIllegal,       this.execWsubdb,        this.execIllegal,       this.execIllegal,       // 0x80 - 0x83
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x84 - 0x87
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x88 - 0x8B
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x8C - 0x8F
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x90 - 0x93
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x94 - 0x97
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x98 - 0x9B
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0x9C - 0x9F
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xA0 - 0xA3
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xA4 - 0xA7
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xA8 - 0xAB
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xAC - 0xAF
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xB0 - 0xB3
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xB4 - 0xB7
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xB8 - 0xBB
+        this.execIllegal,       this.execIllegal,       this.execIllegal,       this.execIllegal,       // 0xBC - 0xBF
+    ];
 
     execRev() {
         const a = this.pop();
