@@ -22,6 +22,8 @@ enum Regs {
     Eoreg
 };
 
+/** If set, halts processor when an error is generated */
+const HaltOnErrorFlag = 0x00000080;
 /** Status bit set when there is an error. */
 const ErrorFlag = 0x80000000;
 
@@ -58,6 +60,8 @@ export class Transputer {
      * Executes instructions until a breakpoint instruction is reached.
      */
     run() {
+        // TODO Implement haltonerrorflag behaviour
+
         try {
             while (true) {
                 this.step();
@@ -641,15 +645,18 @@ export class Transputer {
     }
 
     execClrhalterr() {
-        throw new UnimplementedInstruction();
+        this.clearStatusFlag(HaltOnErrorFlag);
+        this.writeIptr(this.nextInst());
     }
 
     execSethalterr() {
-        throw new UnimplementedInstruction();
+        this.setStatusFlag(HaltOnErrorFlag);
+        this.writeIptr(this.nextInst());
     }
 
     execTesthalterr() {
-        throw new UnimplementedInstruction();
+        this.push(this.getStatusFlag(HaltOnErrorFlag) ? TRUE : FALSE);
+        this.writeIptr(this.nextInst());
     }
 
     execTestlds() {
@@ -987,7 +994,7 @@ export class Transputer {
     }
 
     getStatusFlag(flag: number): boolean {
-        return (this.readStatusReg() & ErrorFlag) !== 0;
+        return (this.readStatusReg() & flag) !== 0;
     }
 
     push(value: number) {

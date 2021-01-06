@@ -259,3 +259,10 @@ test('ldpi produces the byte index from the next inst', () => {
     const t = execSeq('ldc 5; ldpi');
     expect(t.top()).toBe(8);
 });
+
+test('sethalterr and clrhalterr effect can be seen with testhalterr', () => {
+    const t = execSeq('sethalterr; testhalterr; clrhalterr; testhalterr');
+    const a = t.pop();
+    const b = t.pop();
+    expect([a, b]).toEqual([0, 1]);
+});
