@@ -37,6 +37,13 @@ const FALSE = 0;
 class BreakpointReached {        
 }
 
+class IllegalInstruction {
+}
+
+class UnimplementedInstruction {
+}
+
+
 export class Transputer {
 
     registers: Int32Array = new Int32Array(Regs.Eoreg);
@@ -199,12 +206,13 @@ export class Transputer {
         } else if (opcode === 0x1FF) {
             this.execStart();
         } else {
-            throw 'unimplemented';
+            throw new IllegalInstruction();
         }       
         this.writeOreg(0);
     }
 
     execIllegal() {
+        throw new IllegalInstruction();
     }
 
     readonly operations = [
@@ -277,35 +285,35 @@ export class Transputer {
     }
 
     execAdd() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSub() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execMul() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execDiv() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execRem() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSum() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execDiff() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execProd() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execAnd() {
@@ -357,7 +365,7 @@ export class Transputer {
     }
 
     execLend() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execBcnt() {
@@ -404,31 +412,31 @@ export class Transputer {
     }
 
     execMove() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execIn() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execOut() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLb() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSb() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execOutbyte() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execOutword() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execGcall() {
@@ -450,83 +458,83 @@ export class Transputer {
     }
 
     execStartp() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execEndp() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execRunp() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execStopp() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLdpri() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLdtimer() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTin() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execAlt() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execAltwt() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execAltend() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTalt() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTaltwt() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execEnbs() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execDiss() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execEnbc() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execDisc() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execEnbt() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execDist() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execCsub0() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execCcnt1() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTesterr() {
@@ -536,7 +544,7 @@ export class Transputer {
     }
 
     execStoperr() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSeterr() {
@@ -545,103 +553,103 @@ export class Transputer {
     }
 
     execXword() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execCword() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execXdble() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execCsngl() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLadd() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLsub() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLsum() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLdiff() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLmul() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLdiv() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLshl() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLshr() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execNorm() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execResetch() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTestpranal() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSthf() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execStlf() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSttimer() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
   
     execSthb() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execStlb() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSaveh() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSavel() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execClrhalterr() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSethalterr() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTesthalterr() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTestlds() {
@@ -675,246 +683,246 @@ export class Transputer {
     }
 
     execBreak() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execClrj0break() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execSetj0break() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTestj0break() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTesthardchan() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTimerdisableh() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTimerdisablel() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTimerenableh() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execTimerenablel() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLdmemstartval() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFmul() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execUnpacksn() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execRoundsn() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execPostnormsn() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLdinf() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execCflerr() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execMove2dinit() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execMove2dall() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execMove2dnonzero() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execMove2dzero() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execCrcword() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execCrcbyte() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execBitcnt() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
     execBitrevword() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execBitrevnbits() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpldnldbi() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpchkerr() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpstnldb() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpldnlsni() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }     
 
     execFpadd() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpstnlsn() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }      
 
     execFpsub() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }         
 
     execFpldnldb() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }     
 
     execFpmul() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpdiv() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }         
 
     execFpldnlsn() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }      
 
     execFpremfirst() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpremstep() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }     
 
     execFpnan() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }         
 
     execFpordered() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }     
 
     execFpnonfinite() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpgt() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }          
 
     execFpeq() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }          
 
     execFpi32tor32() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpi32tor64() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }    
 
     execFpb32tor64() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }    
 
     execFptesterr() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }     
 
     execFprtoi32() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }      
 
     execFpstnli32() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }     
 
     execFpldzerosn() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpldzerodb() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }    
 
     execFpint() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }         
 
     execFpdup() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFprev() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }         
 
     execFpldnladddb() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }   
 
     execFpldnlmuldb() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }   
 
     execFpldnladdsn() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }   
 
     execFpentry() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execFpldnlmulsn() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execLddevid() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     execStart() {
-        throw 'unimplemented';
+        throw new UnimplementedInstruction();
     }
 
     /** Returns the address of the next instruction. */
