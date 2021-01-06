@@ -29,8 +29,11 @@ const EnableJ0BreakFlag = 0x00000100;
 /** Status bit set when there is an error. */
 const ErrorFlag         = 0x80000000;
 
-const MostNeg = -0x80000000;
-const MostPos = 0x7FFFFFFF;
+/** First user memory address. */
+const MemStart = toInt32(0x80000070);
+
+const MostNeg = toInt32(0x80000000);
+const MostPos = toInt32(0x7FFFFFFF);
 const BytesPerWord = 4;
 const ByteSelectLength = 2;
 const ByteSelectMask = 0x3;
@@ -47,6 +50,11 @@ class IllegalInstruction {
 class UnimplementedInstruction {
 }
 
+function toInt32(value: number): number {
+    const a = new Int32Array(1);
+    a[0] = value;
+    return a[0];
+}
 
 export class Transputer {
 
@@ -732,7 +740,8 @@ export class Transputer {
     }
 
     execLdmemstartval() {
-        throw new UnimplementedInstruction();
+        this.push(MemStart);
+        this.writeIptr(this.nextInst());
     }
 
     execFmul() {

@@ -273,3 +273,8 @@ test('setj0break and clrj0break effect can be seen with testj0break', () => {
     const b = t.pop();
     expect([a, b]).toEqual([0, 1]);
 });
+
+test('ldmemstarval produce the MemStart value', () => {
+    const t = execSeq('ldmemstartval');
+    expect(t.top() >>> 0).toBe(0x80000070);
+});
