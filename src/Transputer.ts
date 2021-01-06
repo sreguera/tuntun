@@ -22,10 +22,12 @@ enum Regs {
     Eoreg
 };
 
-/** If set, halts processor when an error is generated */
-const HaltOnErrorFlag = 0x00000080;
+/** If set, halts processor when an error is generated. */
+const HaltOnErrorFlag   = 0x00000080;
+/** If set, executing j 0 causes a break.  */
+const EnableJ0BreakFlag = 0x00000100;
 /** Status bit set when there is an error. */
-const ErrorFlag = 0x80000000;
+const ErrorFlag         = 0x80000000;
 
 const MostNeg = -0x80000000;
 const MostPos = 0x7FFFFFFF;
@@ -61,6 +63,7 @@ export class Transputer {
      */
     run() {
         // TODO Implement haltonerrorflag behaviour
+        // TODO Implement J 0 break behaviour
 
         try {
             while (true) {
@@ -694,15 +697,18 @@ export class Transputer {
     }
 
     execClrj0break() {
-        throw new UnimplementedInstruction();
+        this.clearStatusFlag(EnableJ0BreakFlag);
+        this.writeIptr(this.nextInst());
     }
 
     execSetj0break() {
-        throw new UnimplementedInstruction();
+        this.setStatusFlag(EnableJ0BreakFlag);
+        this.writeIptr(this.nextInst());
     }
 
     execTestj0break() {
-        throw new UnimplementedInstruction();
+        this.push(this.getStatusFlag(EnableJ0BreakFlag) ? TRUE : FALSE);
+        this.writeIptr(this.nextInst());
     }
 
     execTesthardchan() {

@@ -266,3 +266,10 @@ test('sethalterr and clrhalterr effect can be seen with testhalterr', () => {
     const b = t.pop();
     expect([a, b]).toEqual([0, 1]);
 });
+
+test('setj0break and clrj0break effect can be seen with testj0break', () => {
+    const t = execSeq('setj0break; testj0break; clrj0break; testj0break');
+    const a = t.pop();
+    const b = t.pop();
+    expect([a, b]).toEqual([0, 1]);
+});
