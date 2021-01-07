@@ -1,5 +1,5 @@
 import { Transputer } from './Transputer';
-import { asm } from './Assembler';
+import { asm } from '../asm/Assembler';
 
 /**
  * Assembles the instructions in code and executes them. Stops after executing
