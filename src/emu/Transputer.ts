@@ -337,15 +337,24 @@ export class Transputer {
     }
 
     execSum() {
-        throw new UnimplementedInstruction();
+        const a = this.pop();
+        const b = this.pop();
+        this.push(a + b);
+        this.writeIptr(this.nextInst());
     }
 
     execDiff() {
-        throw new UnimplementedInstruction();
+        const a = this.pop();
+        const b = this.pop();
+        this.push(b - a);
+        this.writeIptr(this.nextInst());
     }
 
     execProd() {
-        throw new UnimplementedInstruction();
+        const a = this.pop();
+        const b = this.pop();
+        this.push(Math.imul(b, a));
+        this.writeIptr(this.nextInst());
     }
 
     execAnd() {

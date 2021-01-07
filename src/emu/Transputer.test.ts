@@ -185,6 +185,21 @@ test('xor performs a bitwise xor', () => {
     expect(t.top()).toBe(0xF0F);
 });
 
+test('sum performs an unchecked sum', () => {
+    const t = execSeq('ldc -5; ldc 7; sum');
+    expect(t.top()).toBe(2);
+});
+
+test('diff performs an unchecked difference', () => {
+    const t = execSeq('ldc 5; ldc -7; diff');
+    expect(t.top()).toBe(12);
+});
+
+test('prod performs an unchecked product', () => {
+    const t = execSeq('ldc 0xFFFFFFFE; ldc 5; prod');
+    expect(t.top()).toBe(-10);
+});
+
 test('not performs a bitwise not', () => {
     const t = execSeq('ldc 0xF; not');
     expect(t.top() >>> 0).toBe(0xFFFFFFF0);
