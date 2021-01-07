@@ -1,4 +1,4 @@
-import { Transputer } from './Transputer';
+import { MemStart, Transputer } from './Transputer';
 import { asm } from '../asm/Assembler';
 
 /**
@@ -8,9 +8,7 @@ import { asm } from '../asm/Assembler';
 function execSeq(code: string): Transputer {
     const t = new Transputer();
     const codes = asm(code);
-    codes.forEach((val, offset) => {
-        t.writeByteMem(offset, val);
-    });
+    t.bootFromLink(codes);
     codes.forEach(_ => t.step());
     return t;
 }
@@ -22,12 +20,30 @@ function execSeq(code: string): Transputer {
 function execCFlow(code: string): Transputer {
     const t = new Transputer();
     const codes = asm(code);
-    codes.forEach((val, offset) => {
-        t.writeByteMem(offset, val);
-    });
+    t.bootFromLink(codes);
     t.run();
     return t;
 }
+
+test('boot from link with wptr at word offset 1', () => {
+    const t = execSeq('ldlp 0');
+    expect(t.top()).toBe(MemStart + 4);
+});
+
+test('boot from link with wptr at word offset 2', () => {
+    const t = execSeq('ldc 0; ldlp 0');
+    expect(t.top()).toBe(MemStart + 4);
+});
+
+test('boot from link with wptr at word offset 3', () => {
+    const t = execSeq('ldc 0; ldc 0; ldlp 0');
+    expect(t.top()).toBe(MemStart + 4);
+});
+
+test('boot from link with wptr at word offset 4', () => {
+    const t = execSeq('ldc 0; ldc 0; ldc 0; ldlp 0');
+    expect(t.top()).toBe(MemStart + 4);
+});
 
 test('ldc loads a constant', () => {
     const t = execSeq('ldc 3');
@@ -77,10 +93,10 @@ test(`cj doesn't jump if A is not 0`, () => {
 });
 
 test('gcall jumps where A says', () => {
-    const t = execCFlow('ldc 4; gcall; ldc 3; j 0; ldc 5; j 0');
+    const t = execCFlow(`ldc ${MemStart + 11}; gcall; ldc 3; j 0; ldc 5; j 0`);
     const a = t.pop();
     const b = t.pop();
-    expect([a, b]).toEqual([5, 2]);
+    expect([a, b]).toEqual([5, MemStart + 9]);
 });
 
 test('gajw changes the workspace pointer', () => {
@@ -94,19 +110,21 @@ test('ajw adjusts the workspace pointer', () => {
 });
 
 test('call calls a procedure', () => {
-    const t = execCFlow('ldc 0x100; gajw; ldc 9; call 2; ldc 3; j 0; ldl 1; j 0');
+    const base = MemStart + 0x100;
+    const t = execCFlow(`ldc ${base}; gajw; ldc 9; call 2; ldc 3; j 0; ldl 1; j 0`);
     expect(t.top()).toBe(9);
 });
 
 test('ret returns from a procedure', () => {
-    const t = execCFlow('ldc 256; gajw; call 2; ldlp 0; j 0; ldlp 0; ret');
+    const base = MemStart + 0x100;
+    const t = execCFlow(`ldc ${base}; gajw; call 2; ldlp 0; j 0; ldlp 0; ret`);
     const a = t.pop();
     const b = t.pop();
-    expect([a, b]).toEqual([256, 240]);
+    expect([a, b]).toEqual([base, base - 16]);
 });
 
 test('ldl and stl load and set items in the workspace', () => {
-    const t = execSeq('ldc 0x100; gajw; ldc 7; stl 0; ldc 2; ldl 0');
+    const t = execSeq(`ldc ${MemStart + 0x100}; gajw; ldc 7; stl 0; ldc 2; ldl 0`);
     expect(t.top()).toBe(7);
 });
 
@@ -116,7 +134,8 @@ test('ldnlp computes a global address', () => {
 });
 
 test('ldnl and stnl load and set items globally', () => {
-    const t = execSeq('ldc 7; ldc 0x100; stnl 5; ldc 0; ldc 0x100; ldnl 5');
+    const base = MemStart + 0x100;
+    const t = execSeq(`ldc 7; ldc ${base}; stnl 5; ldc 0; ldc ${base}; ldnl 5`);
     expect(t.top()).toBe(7);
 });
 
@@ -257,7 +276,7 @@ test('wsubdb produces the double word index', () => {
 
 test('ldpi produces the byte index from the next inst', () => {
     const t = execSeq('ldc 5; ldpi');
-    expect(t.top()).toBe(8);
+    expect(t.top()).toBe(MemStart + 8);
 });
 
 test('sethalterr and clrhalterr effect can be seen with testhalterr', () => {

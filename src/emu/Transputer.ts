@@ -32,7 +32,7 @@ const EnableJ0BreakFlag = 0x00000100;
 const ErrorFlag         = 0x80000000;
 
 /** First user memory address. */
-const MemStart = toInt32(0x80000070);
+export const MemStart = toInt32(0x80000070);
 
 const MostNeg = toInt32(0x80000000);
 const MostPos = toInt32(0x7FFFFFFF);
@@ -58,14 +58,26 @@ function toInt32(value: number): number {
     return a[0];
 }
 
+function adjustToNextWord(value: number): number {
+    if ((value & ByteSelectMask) === 0) {
+        return value;
+    } else {
+        return (value + BytesPerWord) & ~ByteSelectMask; 
+    }
+}
+
 export class Transputer {
 
     registers: Int32Array = new Int32Array(Regs.Eoreg);
 
-    memory: Memory = new Memory(0, 4096);
+    memory: Memory = new Memory(MostNeg, 4096);
 
-    constructor() {
-        this.writeIptr(0);
+    bootFromLink(code: number[]) {
+        code.forEach((val, offset) => {
+            this.writeByteMem(offset + MemStart, val);
+        });
+        this.writeIptr(MemStart);
+        this.writeWptr(adjustToNextWord(MemStart + code.length));
     }
 
     /**
