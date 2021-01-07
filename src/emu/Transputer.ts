@@ -1,3 +1,5 @@
+import { Memory } from "./Memory";
+
 /** Offsets of registers in the register file. */
 enum Regs { 
     /** Points to the workspace of the current process. */
@@ -60,7 +62,7 @@ export class Transputer {
 
     registers: Int32Array = new Int32Array(Regs.Eoreg);
 
-    memory: DataView = new DataView(new ArrayBuffer(4096));
+    memory: Memory = new Memory(0, 4096);
 
     constructor() {
         this.writeIptr(0);
@@ -1039,19 +1041,19 @@ export class Transputer {
     }
 
     readByteMem(offset: number): number {
-        return this.memory.getUint8(offset);
+        return this.memory.readByte(offset);
     }
 
     writeByteMem(offset: number, value: number) {
-        return this.memory.setUint8(offset, value);
+        return this.memory.writeByte(offset, value);
     }
 
     readMem(offset: number): number {
-        return this.memory.getInt32(offset, true);
+        return this.memory.readWord(offset);
     }
 
     writeMem(offset: number, value: number) {
-        return this.memory.setInt32(offset, value, true);
+        return this.memory.writeWord(offset, value);
     }
 
     readWorkspace(offset: number): number {
