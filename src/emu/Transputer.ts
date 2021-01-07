@@ -1,3 +1,4 @@
+import { Fpu } from "./Fpu";
 import { Memory } from "./Memory";
 
 /** Offsets of registers in the register file. */
@@ -71,6 +72,8 @@ export class Transputer {
     registers: Int32Array = new Int32Array(Regs.Eoreg);
 
     memory: Memory = new Memory(MostNeg, 4096);
+
+    fpu: Fpu = new Fpu();
 
     bootFromLink(code: number[]) {
         code.forEach((val, offset) => {
@@ -229,7 +232,7 @@ export class Transputer {
     execOpr() {
         const opcode = this.readOreg();
         if (opcode < this.operations.length) {
-            this.operations[this.readOreg()].call(this);
+            this.operations[opcode].call(this);
         } else if (opcode === 0x17F) {
             this.execLddevid();
         } else if (opcode === 0x1FF) {
@@ -817,140 +820,199 @@ export class Transputer {
         throw new UnimplementedInstruction();
     }
 
-    execFpldnldbi() {
+    execFpldnlsn() {
+        this.fpu.execFpldnlsn();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
-    }
+    }      
 
-    execFpchkerr() {
+    execFpldnldb() {
+        this.fpu.execFpldnldb();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
-    }
-
-    execFpstnldb() {
-        throw new UnimplementedInstruction();
-    }
+    }     
 
     execFpldnlsni() {
+        this.fpu.execFpldnlsni();
+        this.writeIptr(this.nextInst());
+        throw new UnimplementedInstruction();
+    }     
+
+    execFpldnldbi() {
+        this.fpu.execFpldnldbi();
+        this.writeIptr(this.nextInst());
+        throw new UnimplementedInstruction();
+    }
+
+    execFpldnladdsn() {
+        this.fpu.execFpldnladdsn();
+        this.writeIptr(this.nextInst());
+        throw new UnimplementedInstruction();
+    }   
+
+    execFpldnladddb() {
+        this.fpu.execFpldnladddb();
+        this.writeIptr(this.nextInst());
+        throw new UnimplementedInstruction();
+    }   
+
+    execFpldnlmulsn() {
+        this.fpu.execFpldnlmulsn();
+        this.writeIptr(this.nextInst());
+        throw new UnimplementedInstruction();
+    }
+
+    execFpldnlmuldb() {
+        this.fpu.execFpldnlmuldb();
+        this.writeIptr(this.nextInst());
+        throw new UnimplementedInstruction();
+    }   
+
+    execFpstnlsn() {
+        this.fpu.execFpstnlsn();
+        this.writeIptr(this.nextInst());
+        throw new UnimplementedInstruction();
+    }      
+
+    execFpstnldb() {
+        this.fpu.execFpstnldb();
+        this.writeIptr(this.nextInst());
+        throw new UnimplementedInstruction();
+    }
+
+    execFpstnli32() {
+        this.fpu.execFpstnli32();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }     
 
     execFpadd() {
-        throw new UnimplementedInstruction();
+        this.fpu.execFpadd();
+        this.writeIptr(this.nextInst());
     }
 
-    execFpstnlsn() {
-        throw new UnimplementedInstruction();
-    }      
-
     execFpsub() {
-        throw new UnimplementedInstruction();
+        this.fpu.execFpsub();
+        this.writeIptr(this.nextInst());
     }         
 
-    execFpldnldb() {
-        throw new UnimplementedInstruction();
-    }     
-
     execFpmul() {
-        throw new UnimplementedInstruction();
+        this.fpu.execFpmul();
+        this.writeIptr(this.nextInst());
     }
 
     execFpdiv() {
-        throw new UnimplementedInstruction();
+        this.fpu.execFpdiv();
+        this.writeIptr(this.nextInst());
     }         
 
-    execFpldnlsn() {
-        throw new UnimplementedInstruction();
-    }      
-
     execFpremfirst() {
+        this.fpu.execFpremfirst();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }
 
     execFpremstep() {
+        this.fpu.execFpremstep();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }     
 
     execFpnan() {
+        this.fpu.execFpnan();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }         
 
     execFpordered() {
+        this.fpu.execFpordered();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }     
 
     execFpnonfinite() {
+        this.fpu.execFpnonfinite();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }
 
     execFpgt() {
+        this.fpu.execFpgt();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }          
 
     execFpeq() {
+        this.fpu.execFpeq();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }          
 
     execFpi32tor32() {
+        this.fpu.execFpi32tor32();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }
 
     execFpi32tor64() {
+        this.fpu.execFpi32tor64();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }    
 
     execFpb32tor64() {
+        this.fpu.execFpb32tor64();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }    
 
+    execFpchkerr() {
+        this.fpu.execFpchkerr();
+        this.writeIptr(this.nextInst());
+        throw new UnimplementedInstruction();
+    }
+
     execFptesterr() {
+        this.fpu.execFptesterr();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }     
 
     execFprtoi32() {
+        this.fpu.execFprtoi32();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }      
 
-    execFpstnli32() {
-        throw new UnimplementedInstruction();
-    }     
-
     execFpldzerosn() {
-        throw new UnimplementedInstruction();
+        this.fpu.execFpldzerosn();
+        this.writeIptr(this.nextInst());
     }
 
     execFpldzerodb() {
-        throw new UnimplementedInstruction();
+        this.fpu.execFpldzerodb();
+        this.writeIptr(this.nextInst());
     }    
 
     execFpint() {
+        this.fpu.execFpint();
+        this.writeIptr(this.nextInst());
         throw new UnimplementedInstruction();
     }         
 
     execFpdup() {
-        throw new UnimplementedInstruction();
+        this.fpu.execFpdup();
+        this.writeIptr(this.nextInst());
     }
 
     execFprev() {
-        throw new UnimplementedInstruction();
+        this.fpu.execFprev();
+        this.writeIptr(this.nextInst());
     }         
 
-    execFpldnladddb() {
-        throw new UnimplementedInstruction();
-    }   
-
-    execFpldnlmuldb() {
-        throw new UnimplementedInstruction();
-    }   
-
-    execFpldnladdsn() {
-        throw new UnimplementedInstruction();
-    }   
-
     execFpentry() {
-        throw new UnimplementedInstruction();
-    }
-
-    execFpldnlmulsn() {
-        throw new UnimplementedInstruction();
+        this.fpu.execFpentry(this.pop());
+        this.writeIptr(this.nextInst());
     }
 
     execLddevid() {
