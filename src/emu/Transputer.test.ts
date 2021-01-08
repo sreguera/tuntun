@@ -318,3 +318,8 @@ test('lb and sb load and store bytes', () => {
     const t = execSeq(`ldc 5; ldc ${addr}; sb; ldc ${addr}; lb`);
     expect(t.top()).toBe(5);
 });
+
+test('ldpri produces the current priority', () => {
+    const t = execSeq('ldpri');
+    expect(t.top()).toBe(1);
+});

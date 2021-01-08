@@ -3,8 +3,8 @@ import { Memory } from "./Memory";
 
 /** Offsets of registers in the register file. */
 enum Regs { 
-    /** Points to the workspace of the current process. */
-    Wptr,
+    /** Contains the the workspace and priority of the current process. */
+    WdescReg,
     /** Points to the next instruction to be executed. */
     Iptr,
     /** Top of the evaluation stack. */
@@ -80,7 +80,7 @@ export class Transputer {
             this.writeByteMem(offset + MemStart, val);
         });
         this.writeIptr(MemStart);
-        this.writeWptr(adjustToNextWord(MemStart + code.length));
+        this.writeWdescReg(adjustToNextWord(MemStart + code.length) | 1);
     }
 
     /**
@@ -520,7 +520,8 @@ export class Transputer {
     }
 
     execLdpri() {
-        throw new UnimplementedInstruction();
+        this.push(this.readPri());
+        this.writeIptr(this.nextInst());
     }
 
     execLdtimer() {
@@ -1050,12 +1051,20 @@ export class Transputer {
         this.registers[Regs.Iptr] = value;
     }
 
+    writeWdescReg(value: number) {
+        this.registers[Regs.WdescReg] = value;
+    }
+
     readWptr(): number {
-        return this.registers[Regs.Wptr];
+        return this.registers[Regs.WdescReg] & -2;
     }
 
     writeWptr(value: number) {
-        this.registers[Regs.Wptr] = value;
+        this.registers[Regs.WdescReg] = (value & -2) | this.readPri();
+    }
+
+    readPri(): number {
+        return this.registers[Regs.WdescReg] & 1;
     }
 
     readOreg(): number {
