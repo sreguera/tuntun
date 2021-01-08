@@ -323,3 +323,19 @@ test('ldpri produces the current priority', () => {
     const t = execSeq('ldpri');
     expect(t.top()).toBe(1);
 });
+
+test('sthf and sthb set the high priority regs and saveh stores them', () => {
+    const addr = MemStart + 0x100;
+    const t = execSeq(`ldc 5; sthf; ldc 7; sthb; ldc ${addr}; saveh; ldc ${addr}; ldnl 0; ldc ${addr}; ldnl 1;`);
+    const a = t.pop();
+    const b = t.pop();
+    expect([a, b]).toEqual([7, 5]);
+});
+
+test('stlf and stlb set the low priority regs and savel stores them', () => {
+    const addr = MemStart + 0x100;
+    const t = execSeq(`ldc 5; stlf; ldc 7; stlb; ldc ${addr}; savel; ldc ${addr}; ldnl 0; ldc ${addr}; ldnl 1;`);
+    const a = t.pop();
+    const b = t.pop();
+    expect([a, b]).toEqual([7, 5]);
+});

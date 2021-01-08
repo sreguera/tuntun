@@ -21,6 +21,18 @@ enum Regs {
     Oreg,
     /** Behaviour control and error information. */
     StatusReg,
+    /** Front of high priority active process list. */
+    FPtrReg0,
+    /** Front of low priority active process list. */
+    FPtrReg1,
+    /** Back of high priority active process list. */
+    BPtrReg0,
+    /** Back of low priority active process list. */
+    BPtrReg1,
+    /** High priority processor clock. */
+    ClockReg0,
+    /** Low priority processor clock. */
+    ClockReg1,
     /** Marker to get the number of registers. */
     Eoreg
 };
@@ -660,11 +672,13 @@ export class Transputer {
     }
 
     execSthf() {
-        throw new UnimplementedInstruction();
+        this.writeFPtrReg0(this.pop());
+        this.writeIptr(this.nextInst());
     }
 
     execStlf() {
-        throw new UnimplementedInstruction();
+        this.writeFPtrReg1(this.pop());
+        this.writeIptr(this.nextInst());
     }
 
     execSttimer() {
@@ -672,19 +686,27 @@ export class Transputer {
     }
   
     execSthb() {
-        throw new UnimplementedInstruction();
+        this.writeBPtrReg0(this.pop());
+        this.writeIptr(this.nextInst());
     }
 
     execStlb() {
-        throw new UnimplementedInstruction();
+        this.writeBPtrReg1(this.pop());
+        this.writeIptr(this.nextInst());
     }
 
     execSaveh() {
-        throw new UnimplementedInstruction();
+        const a = this.pop();
+        this.writeMem(this.index(a, 0), this.readFPtrReg0());
+        this.writeMem(this.index(a, 1), this.readBPtrReg0());
+        this.writeIptr(this.nextInst());
     }
 
     execSavel() {
-        throw new UnimplementedInstruction();
+        const a = this.pop();
+        this.writeMem(this.index(a, 0), this.readFPtrReg1());
+        this.writeMem(this.index(a, 1), this.readBPtrReg1());
+        this.writeIptr(this.nextInst());
     }
 
     execClrhalterr() {
@@ -1109,6 +1131,54 @@ export class Transputer {
 
     getStatusFlag(flag: number): boolean {
         return (this.readStatusReg() & flag) !== 0;
+    }
+
+    readFPtrReg0(): number {
+        return this.registers[Regs.FPtrReg0];
+    }
+
+    writeFPtrReg0(value: number) {
+        this.registers[Regs.FPtrReg0] = value;
+    }
+
+    readFPtrReg1(): number {
+        return this.registers[Regs.FPtrReg1];
+    }
+
+    writeFPtrReg1(value: number) {
+        this.registers[Regs.FPtrReg1] = value;
+    }
+
+    readBPtrReg0(): number {
+        return this.registers[Regs.BPtrReg0];
+    }
+
+    writeBPtrReg0(value: number) {
+        this.registers[Regs.BPtrReg0] = value;
+    }
+
+    readBPtrReg1(): number {
+        return this.registers[Regs.BPtrReg1];
+    }
+
+    writeBPtrReg1(value: number) {
+        this.registers[Regs.BPtrReg1] = value;
+    }
+
+    readClockReg0(): number {
+        return this.registers[Regs.ClockReg0];
+    }
+
+    writeClockReg0(value: number) {
+        this.registers[Regs.ClockReg0] = value;
+    }
+    
+    readClockReg1(): number {
+        return this.registers[Regs.ClockReg1];
+    }
+
+    writeClockReg1(value: number) {
+        this.registers[Regs.ClockReg1] = value;
     }
 
     push(value: number) {
