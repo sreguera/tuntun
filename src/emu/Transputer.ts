@@ -465,11 +465,16 @@ export class Transputer {
     }
 
     execLb() {
-        throw new UnimplementedInstruction();
+        const a = this.pop();
+        this.push(this.readByteMem(a));
+        this.writeIptr(this.nextInst());
     }
 
     execSb() {
-        throw new UnimplementedInstruction();
+        const a = this.pop();
+        const b = this.pop();
+        this.writeByteMem(a, b);
+        this.writeIptr(this.nextInst());
     }
 
     execOutbyte() {

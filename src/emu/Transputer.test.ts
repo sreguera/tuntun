@@ -312,3 +312,9 @@ test('ldmemstarval produce the MemStart value', () => {
     const t = execSeq('ldmemstartval');
     expect(t.top() >>> 0).toBe(0x80000070);
 });
+
+test('lb and sb load and store bytes', () => {
+    const addr = MemStart + 0x100;
+    const t = execSeq(`ldc 5; ldc ${addr}; sb; ldc ${addr}; lb`);
+    expect(t.top()).toBe(5);
+});
