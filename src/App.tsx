@@ -1,24 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useReducer, useState } from 'react';
+
+import { Transputer } from './emu/Transputer';
+import { asm } from './asm/Assembler';
+
+const p = asm('ldc 5; ldc 8; sum');
+const t = new Transputer();
+t.bootFromLink(p);
 
 function App() {
+
+  const [tr, setTr] = useState(t);
+  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+
+  function step() {
+    tr.step();
+    forceUpdate();
+  };
+
+  function run() {
+    tr.run();
+    forceUpdate();
+  };
+
+  function reset() {
+    tr.bootFromLink(p);
+    forceUpdate();
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>IPTR: <code>{tr.readIptr()}</code></div>
+      <div>A: <code>{tr.top()}</code></div>
+      <button onClick={() => step()}>Step</button>
+      <button onClick={() => run()}>Run</button>
+      <button onClick={() => reset()}>Reset</button>
     </div>
   );
 }
