@@ -1181,6 +1181,30 @@ export class Transputer {
         this.registers[Regs.ClockReg1] = value;
     }
 
+    readAreg(): number {
+        return this.registers[Regs.Areg];
+    }
+
+    writeAreg(value: number) {
+        this.registers[Regs.Areg] = value;
+    }
+
+    readBreg(): number {
+        return this.registers[Regs.Breg];
+    }
+
+    writeBreg(value: number) {
+        this.registers[Regs.Breg] = value;
+    }
+
+    readCreg(): number {
+        return this.registers[Regs.Creg];
+    }
+
+    writeCreg(value: number) {
+        this.registers[Regs.Creg] = value;
+    }
+
     push(value: number) {
         this.registers[Regs.Creg] = this.registers[Regs.Breg];
         this.registers[Regs.Breg] = this.registers[Regs.Areg];
